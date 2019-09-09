@@ -33,10 +33,10 @@ namespace CrossLibrary {
         /// <summary>
         /// Get's a path in the apps private folder
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="databaseFileName"></param>
         /// <returns></returns>
-        public static string GetLocalFilePath(string path) {
-            return CrossFunctions.GetLocalDatabaseFilePath(path);
+        public static string GetLocalDatabaseFilePath(string databaseFileName) {
+            return CrossFunctions.GetLocalDatabaseFilePath(databaseFileName);
         }
 
         /// <summary>
