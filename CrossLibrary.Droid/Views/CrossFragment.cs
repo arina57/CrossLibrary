@@ -66,7 +66,7 @@ namespace CrossLibrary.Droid.Views {
                 this.AboutToBeShown = true;
 
                 FragmentTransaction ft = AppCompatActivity.SupportFragmentManager.BeginTransaction();
-                ft.SetCustomAnimations(Resource.Animation.FadeInFast, Resource.Animation.FadeOutFast, Resource.Animation.FadeInFast, Resource.Animation.FadeOutFast);
+                ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
                 ft.Replace(containerView.Id, this)
                     .Commit();
             }
@@ -76,7 +76,7 @@ namespace CrossLibrary.Droid.Views {
             if (!this.AboutToBeShown && !this.IsAdded) {
                 this.AboutToBeShown = true;
                 FragmentTransaction ft = AppCompatActivity.SupportFragmentManager.BeginTransaction();
-                ft.SetCustomAnimations(Resource.Animation.FadeInFast, Resource.Animation.FadeOutFast, Resource.Animation.FadeInFast, Resource.Animation.FadeOutFast);
+                ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
                 ft.Replace(containerViewId, this)
                     .Commit();
             }
@@ -87,7 +87,7 @@ namespace CrossLibrary.Droid.Views {
             if (!this.AboutToBeShown && !this.IsAdded) {
                 this.AboutToBeShown = true;
                 FragmentTransaction ft = AppCompatActivity.SupportFragmentManager.BeginTransaction();
-                ft.SetCustomAnimations(Resource.Animation.SlideInFromRight, Resource.Animation.SlideOutToLeft, Resource.Animation.SlideInFromLeft, Resource.Animation.SlideOutToRight);
+                ft.SetCustomAnimations(Resource.Animation.slide_in_from_right, Resource.Animation.slide_out_to_left, Resource.Animation.slide_in_from_left, Resource.Animation.slide_out_to_right);
                 //ft.SetCustomAnimations(Resource.Animation.SlideInFromBottom, Resource.Animation.FadeOutFast, Resource.Animation.FadeInFast, Resource.Animation.SlideOutBottom);
                 ft.Replace(Android.Resource.Id.Content, this)
                     .AddToBackStack(this.UnqueId)
@@ -99,7 +99,7 @@ namespace CrossLibrary.Droid.Views {
             if (!this.AboutToBeShown && !this.IsAdded) {
                 this.AboutToBeShown = true;
                 FragmentTransaction ft = AppCompatActivity.SupportFragmentManager.BeginTransaction();
-                ft.SetCustomAnimations(Resource.Animation.FadeInFast, Resource.Animation.FadeOutFast, Resource.Animation.FadeInFast, Resource.Animation.FadeOutFast);
+                ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
                 ft.Add(Android.Resource.Id.Content, this)
                     .AddToBackStack(this.UnqueId)
                     .Commit();
