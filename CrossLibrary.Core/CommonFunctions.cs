@@ -35,7 +35,7 @@ namespace CrossLibrary {
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string GetLocalFilePath(string path) {
+        public static string GetLocalDatabaseFilePath(string path) {
             return CrossFunctions.GetLocalDatabaseFilePath(path);
         }
 
