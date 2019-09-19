@@ -1,4 +1,5 @@
 ﻿using CrossLibrary.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace CrossLibrary {
@@ -27,7 +28,7 @@ namespace CrossLibrary {
         }
 
         public void RefreshUILocale() {
-            CrossView.RefreshUILocale();
+            CrossView?.RefreshUILocale();
         }
 
         public void Show() {
