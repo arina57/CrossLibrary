@@ -223,12 +223,15 @@ namespace CrossLibrary.Droid.Views {
             base.OnDestroyView();
             eventUnsubscritionActions.ForEach(action => action.Invoke());
             disposableObjects.ForEach(disposableObject => disposableObject.Dispose());
-            GC.Collect(); //Shouldn't have to do this, should be done automaticall but heap keeps growing until OOM
+            //GC.Collect(); //Shouldn't have to do this, should be done automaticall but heap keeps growing until OOM
             AboutToBeShown = false;
             dismissedTaskCompletionSource?.TrySetResult(true);
         }
 
-
+        public override void OnLowMemory() {
+            base.OnLowMemory();
+            GC.Collect(); //Shouldn't have to do this, should be done automaticall but heap keeps growing until OOM
+        }
 
     }
 
