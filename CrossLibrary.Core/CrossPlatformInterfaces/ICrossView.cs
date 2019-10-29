@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CrossLibrary.Interfaces {
@@ -8,15 +9,19 @@ namespace CrossLibrary.Interfaces {
 
         void ShowOver();
         void Show();
-
         void Dismiss();
 
         void RefreshUILocale();
 
+        IEnumerable<T> FindViewsOfTypeInTree<T>() where T : class;
+
+
+
+
     }
     public interface ICrossView<TParameter> : ICrossView where TParameter : CrossViewModel {
         TParameter ViewModel { get; }
-        void Prepare(TParameter parameter);
+        void Prepare(TParameter viewModel);
     }
 
 }

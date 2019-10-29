@@ -15,6 +15,10 @@ using CrossLibrary.Interfaces;
 using Plugin.CurrentActivity;
 
 namespace CrossLibrary.Droid.Views {
+
+    public abstract class CrossFragment : CrossFragment<CrossViewModel>, ICrossView, ICrossView<CrossViewModel> {
+    }
+
     /// <summary>
     /// Fragment for easier showing and dismissing
     /// </summary>
@@ -59,6 +63,8 @@ namespace CrossLibrary.Droid.Views {
                 ft.Commit();
             }
         }
+
+
 
 
         public void ShowIn(ViewGroup containerView) {
@@ -139,6 +145,11 @@ namespace CrossLibrary.Droid.Views {
         public abstract void RefreshUILocale();
 
 
+        public IEnumerable<T> FindViewsOfTypeInTree<T>() where T : class {
+            using(new DebugHelper.Timer()) {
+                return this.View.FindViewsOfTypeInTree<T>();
+            }
+        }
 
 
 
@@ -172,7 +183,7 @@ namespace CrossLibrary.Droid.Views {
 
         public override void OnCreate(Bundle savedInstanceState) {
             base.OnCreate(savedInstanceState);
-
+            
         }
 
         public TViewModel ViewModel { get; private set; }
@@ -181,6 +192,11 @@ namespace CrossLibrary.Droid.Views {
                 throw new Exception("Prepare should only be run once");
             }
             this.ViewModel = model;
+        }
+
+        public override void OnActivityCreated(Bundle savedInstanceState) {
+            base.OnActivityCreated(savedInstanceState);
+            ViewModel?.ViewCreated();
         }
 
         public override void OnStart() {
@@ -233,6 +249,7 @@ namespace CrossLibrary.Droid.Views {
             GC.Collect(); //Shouldn't have to do this, should be done automaticall but heap keeps growing until OOM
         }
 
+  
     }
 
 

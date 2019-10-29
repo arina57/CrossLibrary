@@ -10,7 +10,7 @@ namespace CrossLibrary.iOS.Views {
 
         TaskCompletionSource<bool> dismissedTaskCompletionSource;
         TaskCompletionSource<object> loadedTaskCompletionSource = new TaskCompletionSource<object>();
-
+        
 
 
         /// <summary>
@@ -31,6 +31,11 @@ namespace CrossLibrary.iOS.Views {
 
 
         public TViewModel ViewModel { get; private set; }
+
+        /// <summary>
+        /// Called during depenancy injection in CrossViewDependencyServices from Dynamic class
+        /// </summary>
+        /// <param name="model"></param>
         public virtual void Prepare(TViewModel model) {
             if (this.ViewModel != null) {
                 throw new Exception("Prepare should only be run once");
@@ -133,12 +138,24 @@ namespace CrossLibrary.iOS.Views {
 
 
         public virtual void Dismiss() {
-            NavigationController?.PopViewController(true);
+            if (PlatformFunctions.GetTopViewController() == this) {
+                NavigationController?.PopViewController(true);
+            } else {
+                this.View?.RemoveFromSuperview();
+            }
+            
             this.DismissViewController(true, null);
 
         }
 
         public abstract void RefreshUILocale();
+
+        public IEnumerable<T> FindViewsOfTypeInTree<T>() where T : class {
+            return this.View.FindViewsOfTypeInTree<T>();
+        }
+
+
+
 
         /// <summary>
         /// Cleans up after every time the view did disappear
@@ -234,7 +251,6 @@ namespace CrossLibrary.iOS.Views {
         public override void ViewWillAppear(bool animated) {
             base.ViewWillAppear(animated);
             this.NavigationController?.SetToolbarHidden(!UseToolbar, false);
-            RefreshUILocale();
             ViewModel?.ViewAppearing();
         }
 

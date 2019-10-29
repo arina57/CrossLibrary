@@ -1,10 +1,11 @@
 ﻿using CrossLibrary.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CrossLibrary {
     public class CrossViewModel {
-
         private ICrossView crossView;
         public ICrossView CrossView {
             get {
@@ -16,6 +17,13 @@ namespace CrossLibrary {
             }
         }
 
+        private Dictionary<string, ICrossContainerView> containerViewCache = new Dictionary<string, ICrossContainerView>();
+        public ICrossContainerView FindCrossContainerView(string containerId) {
+            if (!containerViewCache.ContainsKey(containerId)) {
+                containerViewCache[containerId] = CrossView.FindViewsOfTypeInTree<ICrossContainerView>().FirstOrDefault(v => v.ContainerId == containerId);
+            }
+            return containerViewCache[containerId];
+        }
 
 
         public void Dismiss() {
@@ -63,6 +71,7 @@ namespace CrossLibrary {
         }
 
         public virtual void ViewAppearing() {
+            CrossView?.RefreshUILocale();
         }
 
         public virtual void ViewCreated() {

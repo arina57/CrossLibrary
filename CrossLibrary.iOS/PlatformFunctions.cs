@@ -8,9 +8,10 @@ using static UIKit.NSLayoutRelation;
 using Foundation;
 using SharedLibrary.iOS.CustomControls;
 using UIKit;
+using CrossLibrary.Interfaces;
 
 namespace CrossLibrary.iOS {
-    public class PlatformFunctions {
+    public static class PlatformFunctions {
         public static UINavigationController GetNavigationController() {
             if (UIApplication.SharedApplication.KeyWindow.RootViewController is UINavigationController navigationController) {
                 return navigationController;
@@ -48,8 +49,18 @@ namespace CrossLibrary.iOS {
             }
         }
 
+        public static IEnumerable<T> FindViewsOfTypeInTree<T>(this UIView view) where T : class {
+            return view.Subviews.RecursiveSelect(v => v.Subviews).Where(v => v is T).Select(v => v as T);
+        }
 
-
+ 
+        public static List<UIView> GetAllSubViewsInTree(this UIView view) {
+            var views = view.Subviews.ToList();
+            foreach (var subView in view.Subviews) {
+                views.AddRange(subView.GetAllSubViewsInTree());
+            }
+            return views;
+        }
 
         public static UIViewController GetTopViewController(UIViewController viewController) {
             var presentedViewController = viewController.PresentedViewController;
@@ -59,6 +70,16 @@ namespace CrossLibrary.iOS {
                 return GetTopViewController(presentedViewController);
             }
 
+        }
+
+        public static UIViewController FindViewController(this UIView view) {
+            if(view.NextResponder is UIViewController viewController) {
+                return viewController;
+            } if(view.NextResponder is UIView nextView) {
+                return FindViewController(nextView);
+            } else {
+                return null;
+            }
         }
 
 
@@ -88,6 +109,18 @@ namespace CrossLibrary.iOS {
                 toastLabel.Dispose();
                 toastLabel = null;
             });
+        }
+
+
+
+        public static void FillParentContraints(this UIView view, float constant = 0f) {
+            view.Superview.AddConstraints(new NSLayoutConstraint[] {
+                        NSLayoutConstraint.Create(view.Superview, Top, Equal, view, Top, 1, constant),
+                        NSLayoutConstraint.Create(view.Superview, Bottom, Equal, view, Bottom, 1, constant),
+                        NSLayoutConstraint.Create(view.Superview, Left, Equal, view, Left, 1, constant),
+                        NSLayoutConstraint.Create(view.Superview, Right, Equal, view, Right, 1, constant),
+            });
+            view.TranslatesAutoresizingMaskIntoConstraints = false;
         }
 
 
