@@ -10,7 +10,7 @@ using UIKit;
 namespace CrossLibrary.iOS.Views {
     [Register("CrossConainerView")]
     public class CrossConainerView : UIView, ICrossContainerView {
-        CrossViewModel subCrossViewModel;
+
 
         public CrossConainerView() : base() {
         }
@@ -29,6 +29,8 @@ namespace CrossLibrary.iOS.Views {
 
         public string ContainerId => this.AccessibilityIdentifier;
 
+        public CrossViewModel SubCrossViewModel { get; private set; }
+
         public void RemoveAllViews() {
             foreach (var view in this.Subviews) {
                 view.RemoveFromSuperview();
@@ -36,27 +38,26 @@ namespace CrossLibrary.iOS.Views {
         }
 
         public void RemoveView() {
-            subCrossViewModel?.Dismiss();
-            subCrossViewModel = null;
+            SubCrossViewModel?.Dismiss();
+            SubCrossViewModel = null;
         }
 
         public void ShowView<TViewModel>(TViewModel crossViewModel) where TViewModel : CrossViewModel {
             RemoveView();
-            RemoveAllViews();
-            subCrossViewModel = crossViewModel;
-        if (crossViewModel.CrossView is UIViewController viewController) {
-            var parentViewController = this.FindViewController();
-            parentViewController.AddChildViewController(viewController);
-            this.TranslatesAutoresizingMaskIntoConstraints = false;
-            this.AddSubview(viewController.View);
-            viewController.View.FillParentContraints();
-            viewController.DidMoveToParentViewController(parentViewController);
-        } else if (crossViewModel.CrossView is UIView view) {
-            this.AddSubview(view);
-            view.FillParentContraints();
-        } else {
-            throw new Exception("No case for crossview of that type");
+            SubCrossViewModel = crossViewModel;
+            if (crossViewModel.CrossView is UIViewController viewController) {
+                var parentViewController = this.FindViewController();
+                parentViewController.AddChildViewController(viewController);
+                this.TranslatesAutoresizingMaskIntoConstraints = false;
+                this.AddSubview(viewController.View);
+                viewController.View.FillParentContraints();
+                viewController.DidMoveToParentViewController(parentViewController);
+            } else if (crossViewModel.CrossView is UIView view) {
+                this.AddSubview(view);
+                view.FillParentContraints();
+            } else {
+                throw new Exception("No case for crossview of that type");
+            }
         }
     }
-}
 }
