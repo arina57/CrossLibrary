@@ -2,8 +2,10 @@
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Xamarin.Forms;
 
@@ -312,6 +314,22 @@ namespace CrossLibrary {
 
         public static void ShowMessageLong(string message) {
             CrossFunctions.ShowMessageLong(message);
+        }
+
+
+
+        public static void RemoveEvents<T>(this T target, string eventName) where T : class {
+            if (ReferenceEquals(target, null)) { 
+                throw new NullReferenceException("Argument \"target\" may not be null."); 
+            }
+            FieldInfo fieldInfo = typeof(T).GetField(eventName, BindingFlags.Static | BindingFlags.NonPublic);
+            if (ReferenceEquals(fieldInfo, null)) {
+                throw new ArgumentException($"{typeof(T).Name} does not have a property with the name \"{eventName}\"");
+            }
+            object eventInstance = fieldInfo.GetValue(target);
+            PropertyInfo propInfo = typeof(T).GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
+            EventHandlerList list = (EventHandlerList)propInfo.GetValue(target, null);
+            list.RemoveHandler(eventInstance, list[eventInstance]);
         }
     }
 }

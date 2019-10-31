@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CrossLibrary {
     public class CrossViewModel {
+        public bool HasCrossView => crossView != null;
         private ICrossView crossView;
         public ICrossView CrossView {
             get {
@@ -20,7 +21,8 @@ namespace CrossLibrary {
         private Dictionary<string, ICrossContainerView> containerViewCache = new Dictionary<string, ICrossContainerView>();
         public ICrossContainerView FindCrossContainerView(string containerId) {
             if (!containerViewCache.ContainsKey(containerId)) {
-                containerViewCache[containerId] = CrossView.FindViewsOfTypeInTree<ICrossContainerView>().FirstOrDefault(v => v.ContainerId == containerId);
+                var container = CrossView.FindViewsOfTypeInTree<ICrossContainerView>().FirstOrDefault(v => v.ContainerId == containerId);
+                containerViewCache[containerId] = container;
             }
             return containerViewCache[containerId];
         }
@@ -33,6 +35,7 @@ namespace CrossLibrary {
         private void DisposeView() {
             crossView?.Dispose();
             crossView = null;
+
         }
 
         public void RefreshUILocale() {
@@ -58,7 +61,12 @@ namespace CrossLibrary {
         }
 
         public virtual void ViewDestroy() {
+            foreach (var container in containerViewCache.Values) {
+                container?.SubCrossViewModel?.Dismiss();
+            }
+            containerViewCache.Clear();
             DisposeView();
+
         }
 
         public virtual void ViewDisappeared() {

@@ -19,9 +19,8 @@ namespace CrossLibrary.Droid.Views {
     [Register("crosslibrary.droid.views.CrossContainerView")]
     public class CrossContainerView : FrameLayout, ICrossContainerView {
 
-        CrossViewModel subCrossViewModel;
+        public CrossViewModel SubCrossViewModel { get; private set; }
         public string ContainerId { get; private set; }
-
 
         public CrossContainerView(Context context, IAttributeSet attrs) :
             base(context, attrs) {
@@ -34,24 +33,25 @@ namespace CrossLibrary.Droid.Views {
         }
 
         public void ShowView<TViewModel>(TViewModel crossViewModel) where TViewModel : CrossViewModel {
-            RemoveView();
-            //RemoveAllViews();
-            subCrossViewModel = crossViewModel;
-            var view = crossViewModel.CrossView;
+                RemoveView();
+                //RemoveAllViews();
+                SubCrossViewModel = crossViewModel;
+                var view = crossViewModel.CrossView; 
 
-            if (crossViewModel.CrossView is Fragment fragment) {
-                FragmentTransaction ft = ((AppCompatActivity)CrossCurrentActivity.Current.Activity).SupportFragmentManager.BeginTransaction();
-                //ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
-                ft.Add(this.Id, fragment);
-                ft.Commit();
-            } else {
-                throw new Exception("No case for crossview of that type" );
-            }
+                if (crossViewModel.CrossView is Fragment fragment) {
+                    FragmentTransaction ft = ((AppCompatActivity)CrossCurrentActivity.Current.Activity).SupportFragmentManager.BeginTransaction();
+                    //ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
+                    ft.Add(this.Id, fragment);
+                    ft.Commit();
+                } else {
+                    throw new Exception("No case for crossview of that type");
+                }
+            
         }
 
         public void RemoveView() {
-            subCrossViewModel?.Dismiss();
-            subCrossViewModel = null;
+            SubCrossViewModel?.Dismiss();
+            SubCrossViewModel = null;
         }
 
         public override void RemoveAllViews() {
