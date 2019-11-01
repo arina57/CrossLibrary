@@ -6,6 +6,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms;
 using CrossLibrary;
 using CrossLibrary.Interfaces;
+using System.Diagnostics;
 
 namespace CrossLibrary.Dependency {
     public static class CrossViewDependencyService {
@@ -54,6 +55,7 @@ namespace CrossLibrary.Dependency {
             }
 
 
+
             return crossView;
         }
 
@@ -71,6 +73,11 @@ namespace CrossLibrary.Dependency {
                         dependencyImplementation = type != null ? new DependencyData(type) : null;
                     }
                 }
+
+                if (dependencyImplementation == null) {
+                    throw new Exception($"Could not find view of type {targetType.FullName}.");
+                }
+
                 dependencyImplementations[targetType] = dependencyImplementation;
             }
             return dependencyImplementations[targetType];
@@ -99,10 +106,24 @@ namespace CrossLibrary.Dependency {
         }
 
         static CrossViewImplementorInfo FindImplementor(Type target) {
+            if (Debugger.IsAttached) {
+                var assignable = dependencyTypes.Where(t => target.IsAssignableFrom(t.Implementor)).ToList();
+                if (assignable.Count > 1) {
+                    Debugger.Break();
+                }
+            }
+
             return dependencyTypes.FirstOrDefault(t => target.IsAssignableFrom(t.Implementor));
         }
 
         static Type FindType(Type target) {
+            if (Debugger.IsAttached) {
+                var assignable = crossViews.Where(t => target.IsAssignableFrom(t)).ToList();
+                if (assignable.Count > 1) {
+                    Debugger.Break();
+                }
+            }
+
             return crossViews.FirstOrDefault(t => target.IsAssignableFrom(t));
         }
 

@@ -21,6 +21,25 @@ namespace CrossLibrary {
         public static ICrossFunctions CrossFunctions = DependencyService.Get<ICrossFunctions>(DependencyFetchTarget.GlobalInstance);
 
 
+        /// <summary>
+        /// Used to attach a view model to a view that was created from platform code.
+        /// Should be called from Views constructor.
+        /// Throws an exception if view already has a view model.
+        /// View must use the same type of ViewModel
+        /// </summary>
+        /// <typeparam name="TViewModel1"></typeparam>
+        /// <typeparam name="TViewModel2"></typeparam>
+        /// <param name="crossView"></param>
+        /// <param name="crossViewModel"></param>
+        public static void AttachViewModel<TViewModel>(this ICrossView<TViewModel> crossView,
+                                                                     TViewModel crossViewModel)
+                                                                       where TViewModel : CrossViewModel {
+            if (crossViewModel.HasCrossView) {
+                throw new Exception("View model already has viewmodel attached");
+            }
+            crossView.Prepare(crossViewModel);
+            crossViewModel.crossView = crossView;
+        }
 
 
         public static IEnumerable<TSource> RecursiveSelect<TSource>(
