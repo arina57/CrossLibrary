@@ -8,23 +8,23 @@ using Foundation;
 using UIKit;
 
 namespace CrossLibrary.iOS.Views {
-    [Register("CrossConainerView")]
-    public class CrossConainerView : UIView, ICrossContainerView {
+    [Register("CrossContainerView")]
+    public class CrossContainerView : UIView, ICrossContainerView {
 
 
-        public CrossConainerView() : base() {
+        public CrossContainerView() : base() {
         }
 
-        public CrossConainerView(NSCoder coder) : base(coder) {
+        public CrossContainerView(NSCoder coder) : base(coder) {
         }
 
-        public CrossConainerView(CGRect frame) : base(frame) {
+        public CrossContainerView(CGRect frame) : base(frame) {
         }
 
-        protected CrossConainerView(NSObjectFlag t) : base(t) {
+        protected CrossContainerView(NSObjectFlag t) : base(t) {
         }
 
-        protected internal CrossConainerView(IntPtr handle) : base(handle) {
+        protected internal CrossContainerView(IntPtr handle) : base(handle) {
         }
 
         public string ContainerId => this.AccessibilityIdentifier;
