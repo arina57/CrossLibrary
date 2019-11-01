@@ -45,7 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UIPaddingLabel.cs" />
     <Compile Include="Views\CrossContainerView.cs" />
-    <Compile Include="Views\CrossUIView.cs" />
     <Compile Include="Views\CrossUIViewController.cs" />
   </ItemGroup>
   <ItemGroup>
