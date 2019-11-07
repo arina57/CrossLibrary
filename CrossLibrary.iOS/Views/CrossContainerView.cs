@@ -45,18 +45,15 @@ namespace CrossLibrary.iOS.Views {
         public void ShowView<TViewModel>(TViewModel crossViewModel) where TViewModel : CrossViewModel {
             RemoveView();
             SubCrossViewModel = crossViewModel;
-            if (crossViewModel.CrossView is UIViewController viewController) {
-                var parentViewController = this.FindViewController();
-                parentViewController.AddChildViewController(viewController);
-                this.TranslatesAutoresizingMaskIntoConstraints = false;
-                this.AddSubview(viewController.View);
-                viewController.View.FillParentContraints();
-                viewController.DidMoveToParentViewController(parentViewController);
-            } else if (crossViewModel.CrossView is UIView view) {
-                this.AddSubview(view);
-                view.FillParentContraints();
+            crossViewModel.ShowIn(this);
+        }
+
+
+        public override bool PointInside(CGPoint point, UIEvent uievent) {
+            if(Subviews.Any(subview => !subview.Hidden && subview.UserInteractionEnabled && subview.PointInside(ConvertPointToView(point, subview), uievent))) {
+                return true;
             } else {
-                throw new Exception("No case for crossview of that type");
+                return false;
             }
         }
     }

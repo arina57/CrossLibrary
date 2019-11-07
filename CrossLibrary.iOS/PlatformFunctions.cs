@@ -124,5 +124,24 @@ namespace CrossLibrary.iOS {
         }
 
 
+        public static void ShowIn(this CrossViewModel crossViewModel, UIView containerView) {
+            if (crossViewModel.CrossView is UIViewController viewController) {
+                viewController.ShowIn(containerView);
+            } else {
+                throw new Exception("No case for crossview of that type");
+            }
+        }
+
+        public static void ShowIn(this UIViewController viewController, UIView containerView) {
+            var parentViewController = containerView.FindViewController();
+            parentViewController.AddChildViewController(viewController);
+            containerView.TranslatesAutoresizingMaskIntoConstraints = false;
+            var rootView = viewController.View;
+            containerView.AddSubview(rootView);
+            viewController.View.FillParentContraints();
+            viewController.DidMoveToParentViewController(parentViewController);
+        }
+
+
     }
 }

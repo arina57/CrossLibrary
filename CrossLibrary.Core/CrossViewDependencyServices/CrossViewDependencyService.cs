@@ -11,25 +11,34 @@ using System.Diagnostics;
 namespace CrossLibrary.Dependency {
     public static class CrossViewDependencyService {
         static bool initialized;
-        private static IEnumerable<Type> crossViews;
+        //private static List<Type> crossViews;
         static readonly object dependencyLock = new object();
         static readonly object initializeLock = new object();
 
         static readonly List<CrossViewImplementorInfo> dependencyTypes = new List<CrossViewImplementorInfo>();
-        static readonly Dictionary<Type, DependencyData> dependencyImplementations = new Dictionary<Type, DependencyData>();
+
+        static readonly Dictionary<(Type, string), DependencyData> dependencyImplementations = new Dictionary<(Type, string), DependencyData>();
 
         public enum DependencyFetchTarget {
             GlobalInstance,
             NewInstance
         }
 
-        public static ICrossView CreateCrossView(CrossViewModel viewModel, DependencyFetchTarget fetchTarget = DependencyFetchTarget.NewInstance) {
+
+        /// <summary>
+        /// Create a cross view from a view model, with the id specified
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="fetchTarget"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static ICrossView CreateCrossView(CrossViewModel viewModel, DependencyFetchTarget fetchTarget = DependencyFetchTarget.NewInstance, string id = "") {
             Initialize();
             Type viewModelType = viewModel.GetType();
             DependencyData dependencyImplementation;
             lock (dependencyLock) {
                 Type targetType = typeof(ICrossView<>).MakeGenericType(viewModelType);
-                dependencyImplementation = GetDependencyImplementation(targetType);
+                dependencyImplementation = GetDependencyImplementation(targetType, id);
             }
 
             if (dependencyImplementation == null) {
@@ -53,80 +62,61 @@ namespace CrossLibrary.Dependency {
             if (fetchTarget == DependencyFetchTarget.GlobalInstance) {
                 dependencyImplementation.GlobalInstance = crossView;
             }
-
-
-
             return crossView;
         }
 
-        private static DependencyData GetDependencyImplementation(Type targetType) {
-            if (!dependencyImplementations.ContainsKey(targetType)) {
-                var implementorInfo = FindImplementor(targetType);
-                DependencyData dependencyImplementation;
-                if (implementorInfo != null) {
-                    dependencyImplementation = new DependencyData(implementorInfo);
-                } else {
-                    using (new DebugHelper.Timer()) {
-                        //Do extra search for type that wasn't registered. This shouldn't excute if it was.
-                        //This is a slower search
-                        var type = FindType(targetType);
-                        dependencyImplementation = type != null ? new DependencyData(type) : null;
-                    }
-                }
-
-                if (dependencyImplementation == null) {
-                    throw new Exception($"Could not find view of type {targetType.FullName}.");
-                }
-
-                dependencyImplementations[targetType] = dependencyImplementation;
+        private static DependencyData GetDependencyImplementation(Type targetType, string id = "") {
+            if (!dependencyImplementations.ContainsKey((targetType, id))) {
+                var dependencyData = FindImplementor(targetType, id);
+                dependencyImplementations[(targetType, id)] = dependencyData;
             }
-            return dependencyImplementations[targetType];
+            return dependencyImplementations[(targetType, id)];
+        }
+
+        static DependencyData FindImplementor(Type target, string id = "") {
+            //Find all registered classes that match the id and type
+            var assignable = dependencyTypes
+                .Where(t => target.IsAssignableFrom(t.Implementor) && id == t.Id)
+                .Select(info => new DependencyData(info));
+
+      
+           
+            if (Debugger.IsAttached) {
+                if (assignable.Count() > 1) {
+                    //If there are more than one class that is assignable from the type
+                    //and both have the same id. stop if the debugger is attached.
+                    //this shouldnt happen.
+                    Debugger.Break();
+                }
+            }
+            return assignable.FirstOrDefault();
         }
 
 
-
-
-        public static void Register<T>() where T : class {
+        public static void Register<T>(string id = "") where T : class {
             Type type = typeof(T);
             if (!dependencyTypes.Any(info => info.Implementor == type)) {
-                dependencyTypes.Add(new CrossViewImplementorInfo(type));
+                dependencyTypes.Add(new CrossViewImplementorInfo(type, id: id));
             }
         }
 
-        public static void Register<T, TImpl>() where T : class where TImpl : class, T {
+        public static void Register<T, TImpl>(string id = "") where T : class where TImpl : class, T {
             Type targetType = typeof(T);
             Type implementorType = typeof(TImpl);
             if (!dependencyTypes.Any(info => info.Implementor == targetType)) {
-                dependencyTypes.Add(new CrossViewImplementorInfo(targetType));
+                dependencyTypes.Add(new CrossViewImplementorInfo(targetType, id: id));
             }
-
             lock (dependencyLock) {
-                dependencyImplementations[targetType] = new DependencyData { ImplementorType = implementorType };
+                dependencyImplementations[(targetType, id)] = new DependencyData { ImplementorType = implementorType, Id = id };
             }
         }
 
-        static CrossViewImplementorInfo FindImplementor(Type target) {
-            if (Debugger.IsAttached) {
-                var assignable = dependencyTypes.Where(t => target.IsAssignableFrom(t.Implementor)).ToList();
-                if (assignable.Count > 1) {
-                    Debugger.Break();
-                }
-            }
 
-            return dependencyTypes.FirstOrDefault(t => target.IsAssignableFrom(t.Implementor));
-        }
 
-        static Type FindType(Type target) {
-            if (Debugger.IsAttached) {
-                var assignable = crossViews.Where(t => target.IsAssignableFrom(t)).ToList();
-                if (assignable.Count > 1) {
-                    Debugger.Break();
-                }
-            }
 
-            return crossViews.FirstOrDefault(t => target.IsAssignableFrom(t));
-        }
-
+        /// <summary>
+        /// Get's all the registed classes and classes of type crossview
+        /// </summary>
         static void Initialize() {
             if (initialized) {
                 return;
@@ -139,7 +129,7 @@ namespace CrossLibrary.Dependency {
 
                 Assembly[] assemblies = Device.GetAssemblies();
 
-                crossViews = assemblies.SelectMany(assembly => assembly.GetTypes()).Where(type => typeof(ICrossView).IsAssignableFrom(type));
+                
 
 
                 if (Registrar.ExtraAssemblies != null) {
@@ -160,38 +150,59 @@ namespace CrossLibrary.Dependency {
                     return;
                 }
 
+
                 Type targetAttrType = typeof(CrossViewAttribute);
 
-                // Don't use LINQ for performance reasons
-                // Naive implementation can easily take over a second to run
-                foreach (Assembly assembly in assemblies) {
-                    object[] attributes;
-                    try {
+                using (new DebugHelper.Timer()) {
+
+                    // Don't use LINQ for performance reasons
+                    // Naive implementation can easily take over a second to run
+                    foreach (Assembly assembly in assemblies) {
+                        object[] attributes;
+                        try {
 #if NETSTANDARD2_0
 						attributes = assembly.GetCustomAttributes(targetAttrType, true);
 #else
-                        attributes = assembly.GetCustomAttributes(targetAttrType).ToArray();
+                            attributes = assembly.GetCustomAttributes(targetAttrType).ToArray();
 #endif
-                    } catch (System.IO.FileNotFoundException) {
-                        // Sometimes the previewer doesn't actually have everything required for these loads to work
-                        Log.Warning(nameof(Registrar), "Could not load assembly: {0} for Attibute {1} | Some renderers may not be loaded", assembly.FullName, targetAttrType.FullName);
-                        continue;
-                    }
 
-                    var length = attributes.Length;
-                    if (length == 0) {
-                        continue;
-                    }
 
-                    for (int i = 0; i < length; i++) {
-                        CrossViewAttribute attribute = (CrossViewAttribute)attributes[i];
-                        if (!dependencyTypes.Contains(attribute.DependencyInfo)) {
-                            dependencyTypes.Add(attribute.DependencyInfo);
+
+                        } catch (System.IO.FileNotFoundException) {
+                            // Sometimes the previewer doesn't actually have everything required for these loads to work
+                            Log.Warning(nameof(Registrar), "Could not load assembly: {0} for Attibute {1} | Some renderers may not be loaded", assembly.FullName, targetAttrType.FullName);
+                            continue;
                         }
-                    }
-                }
 
-                initialized = true;
+                        var length = attributes.Length;
+                        if (length == 0) {
+                            continue;
+                        }
+
+                        ///Tracks the registered types, so they aren't added twice
+                        var registeredTypes = new List<Type>();
+                        for (int i = 0; i < length; i++) {
+                            CrossViewAttribute attribute = (CrossViewAttribute)attributes[i];
+                            if (!dependencyTypes.Contains(attribute.DependencyInfo)) {
+                                dependencyTypes.Add(attribute.DependencyInfo);
+                                registeredTypes.Add(attribute.DependencyInfo.Implementor);
+                            }
+                        }
+
+                        using (new DebugHelper.Timer()) {
+                            //Find all crossViews in assembly
+                            foreach (var type in assembly.GetTypes()) {
+                                if (typeof(ICrossView).IsAssignableFrom(type) && !registeredTypes.Contains(type)) {
+                                    dependencyTypes.Add(new CrossViewImplementorInfo(type));
+                                }
+                            }
+                        }
+
+
+                    }
+
+                    initialized = true;
+                }
             }
         }
 
@@ -200,24 +211,24 @@ namespace CrossLibrary.Dependency {
             public DependencyData() {
             }
 
-            public DependencyData(Type implementorType, string storyBoardIdentifier = "", string storyBoardName = "") {
+            public DependencyData(Type implementorType) {
                 ImplementorType = implementorType;
-                StoryBoardIdentifier = storyBoardIdentifier;
-                StoryBoardName = storyBoardName;
             }
 
             public DependencyData(CrossViewImplementorInfo crossViewImplementorInfo) {
                 ImplementorType = crossViewImplementorInfo.Implementor;
                 StoryBoardIdentifier = crossViewImplementorInfo.StoryBoardIdentifier;
                 StoryBoardName = crossViewImplementorInfo.StoryBoardName;
+                Id = crossViewImplementorInfo.Id;
             }
 
             public ICrossView GlobalInstance { get; set; }
 
             public Type ImplementorType { get; set; }
 
-            public string StoryBoardIdentifier { get; set; }
-            public string StoryBoardName { get; internal set; }
+            public string StoryBoardIdentifier { get; set; } = string.Empty;
+            public string StoryBoardName { get; internal set; } = string.Empty;
+            public string Id { get; set; } = string.Empty;
         }
     }
 }

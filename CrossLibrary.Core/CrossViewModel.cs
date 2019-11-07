@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 namespace CrossLibrary {
     public class CrossViewModel {
         public bool HasCrossView => crossView != null;
+        protected virtual string ViewClassId { get; set; } = string.Empty;
         internal ICrossView crossView;
         public ICrossView CrossView {
             get {
                 if (crossView == null) {
                     //trys to find the appropriate View that goes with this view model
-                    crossView = Dependency.CrossViewDependencyService.CreateCrossView(this); 
+                    crossView = Dependency.CrossViewDependencyService.CreateCrossView(this, id: ViewClassId); 
                 }
                 return crossView;
             }
@@ -20,12 +21,15 @@ namespace CrossLibrary {
 
         private Dictionary<string, ICrossContainerView> containerViewCache = new Dictionary<string, ICrossContainerView>();
 
-  
-       
+
+
 
         public ICrossContainerView FindCrossContainerView(string containerId) {
             if (!containerViewCache.ContainsKey(containerId)) {
                 var container = CrossView.FindViewsOfTypeInTree<ICrossContainerView>().FirstOrDefault(v => v.ContainerId == containerId);
+                //if (container == null) {
+                //    throw new Exception($"Container view with Id {containerId} could not be found");
+                //}
                 containerViewCache[containerId] = container;
             }
             return containerViewCache[containerId];
@@ -42,7 +46,7 @@ namespace CrossLibrary {
 
         }
 
-        public void RefreshUILocale() {
+        public virtual void RefreshUILocale() {
             crossView?.RefreshUILocale();
         }
 
