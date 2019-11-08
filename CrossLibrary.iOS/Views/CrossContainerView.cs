@@ -31,6 +31,7 @@ namespace CrossLibrary.iOS.Views {
 
         public CrossViewModel SubCrossViewModel { get; private set; }
 
+
         public void RemoveAllViews() {
             foreach (var view in this.Subviews) {
                 view.RemoveFromSuperview();
@@ -40,6 +41,18 @@ namespace CrossLibrary.iOS.Views {
         public void RemoveView() {
             SubCrossViewModel?.Dismiss();
             SubCrossViewModel = null;
+        }
+
+        public override void AwakeFromNib() {
+            base.AwakeFromNib();
+            
+        }
+
+        public override void MovedToWindow() {
+            base.MovedToWindow();
+            if (SubCrossViewModel != null && (this.Subviews.Length == 0 || !Subviews.Any(view => view == SubCrossViewModel.CrossView))) {
+                SubCrossViewModel.ShowIn(this);
+            }
         }
 
         public void ShowView<TViewModel>(TViewModel crossViewModel) where TViewModel : CrossViewModel {

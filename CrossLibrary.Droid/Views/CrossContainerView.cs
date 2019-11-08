@@ -22,6 +22,7 @@ namespace CrossLibrary.Droid.Views {
         public CrossViewModel SubCrossViewModel { get; private set; }
         public string ContainerId { get; private set; }
 
+
         public CrossContainerView(Context context, IAttributeSet attrs) :
             base(context, attrs) {
             Init(attrs);

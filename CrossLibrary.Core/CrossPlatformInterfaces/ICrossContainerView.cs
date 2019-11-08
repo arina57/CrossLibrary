@@ -8,7 +8,7 @@ namespace CrossLibrary.Interfaces {
 
         CrossViewModel SubCrossViewModel { get; }
         void ShowView<TViewModel>(TViewModel crossViewModel) where TViewModel : CrossViewModel;
-        //void RemoveView();
+        void RemoveView();
         void RemoveAllViews();
         string ContainerId { get; }
     }

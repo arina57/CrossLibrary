@@ -79,8 +79,8 @@ namespace CrossLibrary.Dependency {
                 .Where(t => target.IsAssignableFrom(t.Implementor) && id == t.Id)
                 .Select(info => new DependencyData(info));
 
-      
-           
+
+
             if (Debugger.IsAttached) {
                 if (assignable.Count() > 1) {
                     //If there are more than one class that is assignable from the type
@@ -129,7 +129,7 @@ namespace CrossLibrary.Dependency {
 
                 Assembly[] assemblies = Device.GetAssemblies();
 
-                
+
 
 
                 if (Registrar.ExtraAssemblies != null) {
@@ -153,56 +153,52 @@ namespace CrossLibrary.Dependency {
 
                 Type targetAttrType = typeof(CrossViewAttribute);
 
-                using (new DebugHelper.Timer()) {
 
-                    // Don't use LINQ for performance reasons
-                    // Naive implementation can easily take over a second to run
-                    foreach (Assembly assembly in assemblies) {
-                        object[] attributes;
-                        try {
+                // Don't use LINQ for performance reasons
+                // Naive implementation can easily take over a second to run
+                foreach (Assembly assembly in assemblies) {
+                    object[] attributes;
+                    try {
 #if NETSTANDARD2_0
 						attributes = assembly.GetCustomAttributes(targetAttrType, true);
 #else
-                            attributes = assembly.GetCustomAttributes(targetAttrType).ToArray();
+                        attributes = assembly.GetCustomAttributes(targetAttrType).ToArray();
 #endif
 
 
 
-                        } catch (System.IO.FileNotFoundException) {
-                            // Sometimes the previewer doesn't actually have everything required for these loads to work
-                            Log.Warning(nameof(Registrar), "Could not load assembly: {0} for Attibute {1} | Some renderers may not be loaded", assembly.FullName, targetAttrType.FullName);
-                            continue;
-                        }
-
-                        var length = attributes.Length;
-                        if (length == 0) {
-                            continue;
-                        }
-
-                        ///Tracks the registered types, so they aren't added twice
-                        var registeredTypes = new List<Type>();
-                        for (int i = 0; i < length; i++) {
-                            CrossViewAttribute attribute = (CrossViewAttribute)attributes[i];
-                            if (!dependencyTypes.Contains(attribute.DependencyInfo)) {
-                                dependencyTypes.Add(attribute.DependencyInfo);
-                                registeredTypes.Add(attribute.DependencyInfo.Implementor);
-                            }
-                        }
-
-                        using (new DebugHelper.Timer()) {
-                            //Find all crossViews in assembly
-                            foreach (var type in assembly.GetTypes()) {
-                                if (typeof(ICrossView).IsAssignableFrom(type) && !registeredTypes.Contains(type)) {
-                                    dependencyTypes.Add(new CrossViewImplementorInfo(type));
-                                }
-                            }
-                        }
-
-
+                    } catch (System.IO.FileNotFoundException) {
+                        // Sometimes the previewer doesn't actually have everything required for these loads to work
+                        Log.Warning(nameof(Registrar), "Could not load assembly: {0} for Attibute {1} | Some renderers may not be loaded", assembly.FullName, targetAttrType.FullName);
+                        continue;
                     }
 
-                    initialized = true;
+                    var length = attributes.Length;
+                    if (length == 0) {
+                        continue;
+                    }
+
+                    ///Tracks the registered types, so they aren't added twice
+                    var registeredTypes = new List<Type>();
+                    for (int i = 0; i < length; i++) {
+                        CrossViewAttribute attribute = (CrossViewAttribute)attributes[i];
+                        if (!dependencyTypes.Contains(attribute.DependencyInfo)) {
+                            dependencyTypes.Add(attribute.DependencyInfo);
+                            registeredTypes.Add(attribute.DependencyInfo.Implementor);
+                        }
+                    }
+
+                    //Find all crossViews in assembly
+                    foreach (var type in assembly.GetTypes()) {
+                        if (typeof(ICrossView).IsAssignableFrom(type) && !registeredTypes.Contains(type)) {
+                            dependencyTypes.Add(new CrossViewImplementorInfo(type));
+                        }
+                    }
+
+
                 }
+
+                initialized = true;
             }
         }
 
