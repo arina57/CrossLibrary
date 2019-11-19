@@ -12,6 +12,7 @@ namespace CrossLibrary.Interfaces {
         void Dismiss();
 
         void RefreshUILocale();
+        bool ViewCreated { get; }
 
         IEnumerable<T> FindViewsOfTypeInTree<T>() where T : class;
 

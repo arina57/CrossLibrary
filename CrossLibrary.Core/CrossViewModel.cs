@@ -47,7 +47,9 @@ namespace CrossLibrary {
         }
 
         public virtual void RefreshUILocale() {
-            crossView?.RefreshUILocale();
+            if(HasCrossView && crossView.ViewCreated) {
+                crossView.RefreshUILocale();
+            }
         }
 
         public void Show() {

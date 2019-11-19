@@ -34,20 +34,20 @@ namespace CrossLibrary.Droid.Views {
         }
 
         public void ShowView<TViewModel>(TViewModel crossViewModel) where TViewModel : CrossViewModel {
-                RemoveView();
-                //RemoveAllViews();
-                SubCrossViewModel = crossViewModel;
-                var view = crossViewModel.CrossView; 
+            RemoveView();
+            //RemoveAllViews();
+            SubCrossViewModel = crossViewModel;
+            if (crossViewModel.CrossView == null) {
+                throw new Exception($"CrossView is null");
+            } else if (crossViewModel.CrossView is Fragment fragment) {
+                FragmentTransaction ft = ((AppCompatActivity)CrossCurrentActivity.Current.Activity).SupportFragmentManager.BeginTransaction();
+                ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
+                ft.Add(this.Id, fragment);
+                ft.Commit();
+            } else {
+                throw new Exception($"No case for crossview of that type");
+            }
 
-                if (crossViewModel.CrossView is Fragment fragment) {
-                    FragmentTransaction ft = ((AppCompatActivity)CrossCurrentActivity.Current.Activity).SupportFragmentManager.BeginTransaction();
-                    //ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
-                    ft.Add(this.Id, fragment);
-                    ft.Commit();
-                } else {
-                    throw new Exception("No case for crossview of that type");
-                }
-            
         }
 
         public void RemoveView() {
@@ -64,7 +64,7 @@ namespace CrossLibrary.Droid.Views {
         /// </summary>
         /// <param name="attrs"></param>
         private void Init(IAttributeSet attrs) {
-            if(attrs != null) {
+            if (attrs != null) {
                 TypedArray attrsArray = Context.ObtainStyledAttributes(attrs, Resource.Styleable.CrossContainerView);
                 var containerId = attrsArray.GetString(Resource.Styleable.CrossContainerView_containerId);
                 if (containerId != null) {

@@ -13,7 +13,7 @@ namespace CrossLibrary {
     /// <summary>
     /// Static functions that are crossplatform
     /// </summary>
-    public static class CommonFunctions  {
+    public static class CommonFunctions {
 
         /// <summary>
         /// This is just here so there doesn't need to be a bunch of ugly dependency injection calls through out the code
@@ -43,7 +43,7 @@ namespace CrossLibrary {
 
 
         public static IEnumerable<TSource> RecursiveSelect<TSource>(
-                this IEnumerable<TSource> source, 
+                this IEnumerable<TSource> source,
                 Func<TSource, IEnumerable<TSource>> childSelector) {
 
             var stack = new Stack<IEnumerator<TSource>>();
@@ -107,6 +107,7 @@ namespace CrossLibrary {
         public static void GoToTopPage() {
             CrossFunctions.GoToTopPage();
         }
+
 
 
 
@@ -291,6 +292,21 @@ namespace CrossLibrary {
         }
 
 
+ 
+
+        public static (int outerIndex, int innerIndex) GetIndexOfPosition<T>(this T[][] jaggered, int position) {
+            var innerIndex = position;
+            for (int outerIndex = 0; outerIndex < jaggered.Length; outerIndex++) {
+                if (innerIndex >= jaggered[outerIndex].Length) {
+                    innerIndex -= jaggered[outerIndex].Length;
+                } else {
+                    return (outerIndex, innerIndex);
+                }
+            }
+            throw new IndexOutOfRangeException();
+        }
+
+
         /// <summary>
         /// Generates Lorem Ipsum
         /// </summary>
@@ -338,8 +354,8 @@ namespace CrossLibrary {
 
 
         public static void RemoveEvents<T>(this T target, string eventName) where T : class {
-            if (ReferenceEquals(target, null)) { 
-                throw new NullReferenceException("Argument \"target\" may not be null."); 
+            if (ReferenceEquals(target, null)) {
+                throw new NullReferenceException("Argument \"target\" may not be null.");
             }
             FieldInfo fieldInfo = typeof(T).GetField(eventName, BindingFlags.Static | BindingFlags.NonPublic);
             if (ReferenceEquals(fieldInfo, null)) {

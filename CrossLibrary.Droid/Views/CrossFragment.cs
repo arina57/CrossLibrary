@@ -187,6 +187,9 @@ namespace CrossLibrary.Droid.Views {
         }
 
         public TViewModel ViewModel { get; private set; }
+
+        public bool ViewCreated { get; private set; } = false;
+
         public virtual void Prepare(TViewModel model) {
             if (this.ViewModel != null) {
                 throw new Exception("Prepare should only be run once");
@@ -196,6 +199,7 @@ namespace CrossLibrary.Droid.Views {
 
         public override void OnActivityCreated(Bundle savedInstanceState) {
             base.OnActivityCreated(savedInstanceState);
+            ViewCreated = true;
             ViewModel?.ViewCreated();
         }
 
@@ -203,7 +207,8 @@ namespace CrossLibrary.Droid.Views {
             base.OnStart();
             ViewModel?.ViewAppearing();
         }
-     
+
+        
 
         public override void OnPause() {
             base.OnPause();
@@ -237,6 +242,7 @@ namespace CrossLibrary.Droid.Views {
         }
         public override void OnDestroyView() {
             base.OnDestroyView();
+            ViewCreated = false;
             eventUnsubscritionActions.ForEach(action => action.Invoke());
             disposableObjects.ForEach(disposableObject => disposableObject.Dispose());
             //GC.Collect(); //Shouldn't have to do this, should be done automaticall but heap keeps growing until OOM

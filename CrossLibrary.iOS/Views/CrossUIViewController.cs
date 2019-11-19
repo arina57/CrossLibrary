@@ -32,6 +32,8 @@ namespace CrossLibrary.iOS.Views {
 
         public TViewModel ViewModel { get; private set; }
 
+        public bool ViewCreated { get; private set; } = false;
+
         /// <summary>
         /// Called during depenancy injection in CrossViewDependencyServices from Dynamic class
         /// </summary>
@@ -142,6 +144,7 @@ namespace CrossLibrary.iOS.Views {
                 NavigationController?.PopViewController(true);
             } else {
                 this.View?.RemoveFromSuperview();
+                this.RemoveFromParentViewController();
             }
             
             this.DismissViewController(true, null);
@@ -205,6 +208,7 @@ namespace CrossLibrary.iOS.Views {
 
 
         public override void ViewDidLoad() {
+            ViewCreated = true;
             base.ViewDidLoad();
             loadedTaskCompletionSource.TrySetResult(null);
             ViewModel?.ViewCreated();
@@ -224,6 +228,7 @@ namespace CrossLibrary.iOS.Views {
         public override void RemoveFromParentViewController() {
             base.RemoveFromParentViewController();
             ViewModel?.ViewDestroy();
+            ViewCreated = false;
         }
 
 
