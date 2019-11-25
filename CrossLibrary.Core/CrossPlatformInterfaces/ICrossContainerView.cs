@@ -11,5 +11,6 @@ namespace CrossLibrary.Interfaces {
         void RemoveView();
         void RemoveAllViews();
         string ContainerId { get; }
+        void SuperCrossViewAppearing();
     }
 }

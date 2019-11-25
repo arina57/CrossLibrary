@@ -133,15 +133,14 @@ namespace CrossLibrary.iOS {
         }
 
         public static void ShowIn(this UIViewController viewController, UIView containerView) {
-            var parentViewController = containerView.FindViewController();
-            parentViewController.AddChildViewController(viewController);
-            containerView.TranslatesAutoresizingMaskIntoConstraints = false;
-            var rootView = viewController.View;
-            containerView.AddSubview(rootView);
-            viewController.View.FillParentContraints();
-            viewController.DidMoveToParentViewController(parentViewController);
+            var newParentViewController = containerView.FindViewController();
+            if(viewController.ParentViewController != newParentViewController && !containerView.Subviews.Contains(viewController.View)) {
+                newParentViewController.AddChildViewController(viewController);
+                containerView.TranslatesAutoresizingMaskIntoConstraints = false;
+                containerView.AddSubview(viewController.View);
+                viewController.View.FillParentContraints();
+                viewController.DidMoveToParentViewController(newParentViewController);
+            }
         }
-
-
     }
 }

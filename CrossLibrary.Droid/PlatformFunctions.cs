@@ -45,5 +45,12 @@ namespace CrossLibrary.Droid {
             
         }
 
+        public static void Hidden(this View view, bool hidden) {
+            view.Visibility = hidden ? ViewStates.Invisible : ViewStates.Visible;
+        }
+
+        public static void Gone(this View view, bool gone) {
+            view.Visibility = gone ? ViewStates.Gone : ViewStates.Visible;
+        }
     }
 }

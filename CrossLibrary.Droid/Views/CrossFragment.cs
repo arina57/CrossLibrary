@@ -162,11 +162,7 @@ namespace CrossLibrary.Droid.Views {
             }
         }
 
-        //public virtual void Remove() {
-        //    FragmentTransaction ft = PlatformGlobal.CurrentActivityExtra.SupportFragmentManager.BeginTransaction();
-        //    ft.Remove(this).Commit();
-        //    PlatformGlobal.CurrentActivityExtra.SupportFragmentManager.PopBackStack(UnqueId, FragmentManager.PopBackStackInclusive);
-        //}
+        
 
 
         protected override void Dispose(bool disposing) {
@@ -252,10 +248,12 @@ namespace CrossLibrary.Droid.Views {
 
         public override void OnLowMemory() {
             base.OnLowMemory();
+            ViewModel.OnLowMemory();
             GC.Collect(); //Shouldn't have to do this, should be done automaticall but heap keeps growing until OOM
         }
 
-  
+
+
     }
 
 

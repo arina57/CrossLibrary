@@ -45,12 +45,19 @@ namespace CrossLibrary.iOS.Views {
 
         public override void AwakeFromNib() {
             base.AwakeFromNib();
-            
+
+        }
+
+        public void SuperCrossViewAppearing() {
+            if (SubCrossViewModel != null && (this.Subviews == null || !Subviews.Any(view => view == SubCrossViewModel.CrossView))) {
+                SubCrossViewModel.ShowIn(this);
+            }
+
         }
 
         public override void MovedToWindow() {
             base.MovedToWindow();
-            if (SubCrossViewModel != null && (this.Subviews.Length == 0 || !Subviews.Any(view => view == SubCrossViewModel.CrossView))) {
+            if (SubCrossViewModel != null && (this.Subviews.Length == 0 && !Subviews.Any(view => view == SubCrossViewModel.CrossView))) {
                 SubCrossViewModel.ShowIn(this);
             }
         }

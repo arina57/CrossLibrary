@@ -13,12 +13,8 @@ namespace CrossLibrary.Interfaces {
 
         void RefreshUILocale();
         bool ViewCreated { get; }
-
+        bool Visible { get; }
         IEnumerable<T> FindViewsOfTypeInTree<T>() where T : class;
-
-
-
-
     }
     public interface ICrossView<TParameter> : ICrossView where TParameter : CrossViewModel {
         TParameter ViewModel { get; }

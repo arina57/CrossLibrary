@@ -19,14 +19,24 @@ namespace CrossLibrary {
             }
         }
 
+        public bool Visible => crossView?.Visible ?? false;
+      
+
+
         private Dictionary<string, ICrossContainerView> containerViewCache = new Dictionary<string, ICrossContainerView>();
+
 
 
 
 
         public ICrossContainerView FindCrossContainerView(string containerId) {
             if (!containerViewCache.ContainsKey(containerId)) {
-                var container = CrossView.FindViewsOfTypeInTree<ICrossContainerView>().FirstOrDefault(v => v.ContainerId == containerId);
+                var matchingContainers = CrossView.FindViewsOfTypeInTree<ICrossContainerView>().Where(v => v.ContainerId == containerId);
+                if (matchingContainers.Count() > 1) {
+                    throw new Exception($"More than one ICrossContainerView with the id {containerId} exists.");
+                }
+
+                var container = matchingContainers.FirstOrDefault();
                 //if (container == null) {
                 //    throw new Exception($"Container view with Id {containerId} could not be found");
                 //}
@@ -40,15 +50,31 @@ namespace CrossLibrary {
             crossView?.Dismiss();
         }
 
+        public  async Task DismissAsync() {
+            dismissedTaskCompletionSource = new TaskCompletionSource<bool>();
+            
+            try {
+                Dismiss();
+                await dismissedTaskCompletionSource.Task;
+            } finally {
+                dismissedTaskCompletionSource = null;
+            }
+        }
+
         private void DisposeView() {
+            crossView?.Dismiss();
             crossView?.Dispose();
             crossView = null;
-
         }
 
         public virtual void RefreshUILocale() {
             if(HasCrossView && crossView.ViewCreated) {
                 crossView.RefreshUILocale();
+                foreach (var container in containerViewCache.Values) {
+                    if (container != null && container.SubCrossViewModel != null) {
+                        container.SubCrossViewModel.RefreshUILocale();
+                    }
+                }
             }
         }
 
@@ -71,15 +97,21 @@ namespace CrossLibrary {
         }
 
         public virtual void ViewDestroy() {
-            foreach (var container in containerViewCache.Values) {
-                container?.SubCrossViewModel?.Dismiss();
-            }
-            containerViewCache.Clear();
+            RemoveSubViews();
             DisposeView();
 
         }
 
+        private void RemoveSubViews() {
+            foreach (var container in containerViewCache.Values) {
+                //container?.SubCrossViewModel?.Dismiss();
+                container?.SubCrossViewModel?.DisposeView();
+            }
+            containerViewCache.Clear();
+        }
+
         public virtual void ViewDisappeared() {
+            dismissedTaskCompletionSource?.TrySetResult(true);
         }
 
         public virtual void ViewDisappearing() {
@@ -89,10 +121,33 @@ namespace CrossLibrary {
         }
 
         public virtual void ViewAppearing() {
+            foreach (var container in containerViewCache.Values) {
+                container?.SuperCrossViewAppearing();
+            }
             RefreshUILocale();
+
         }
 
+        bool viewFirstCreated = true;
+        private TaskCompletionSource<bool> dismissedTaskCompletionSource;
+
         public virtual void ViewCreated() {
+            if(viewFirstCreated) {
+                viewFirstCreated = false;
+                ViewFirstCreated();
+            }
+        }
+
+        public virtual void ViewFirstCreated() {
+
+        }
+
+        public void ViewDisposed() {
+            crossView = null;
+        }
+
+        public void OnLowMemory() {
+            
         }
     }
 }

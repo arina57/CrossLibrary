@@ -4,6 +4,7 @@ using Foundation;
 using UIKit;
 using System.Threading.Tasks;
 using CrossLibrary.Interfaces;
+using System.Linq;
 
 namespace CrossLibrary.iOS.Views {
     public abstract class CrossUIViewController<TViewModel> : UIViewController, ICrossView, ICrossView<TViewModel> where TViewModel : CrossViewModel {
@@ -13,26 +14,17 @@ namespace CrossLibrary.iOS.Views {
         
 
 
-        /// <summary>
-        /// These will run when view has been popped
-        /// </summary>
-        protected List<Action> cleanupActions = new List<Action>();
-        /// <summary>
-        /// These will be disposed when vuew has been popped
-        /// </summary>
-        protected List<IDisposable> DisposableObjects = new List<IDisposable>();
 
         public bool Visible => this.ViewIfLoaded != null && this.ViewIfLoaded.Window != null;
 
 
 
-        public bool UseToolbar { get; set; } = true;
 
 
 
         public TViewModel ViewModel { get; private set; }
 
-        public bool ViewCreated { get; private set; } = false;
+        public virtual bool ViewCreated { get; protected set; } = false;
 
         /// <summary>
         /// Called during depenancy injection in CrossViewDependencyServices from Dynamic class
@@ -46,9 +38,7 @@ namespace CrossLibrary.iOS.Views {
         }
 
 
-        public void AddUnsubscriptionAction(Action unsubscription) {
-            cleanupActions.Add(unsubscription);
-        }
+  
 
         public CrossUIViewController() : base() {
         }
@@ -66,16 +56,7 @@ namespace CrossLibrary.iOS.Views {
         }
 
 
-        private void Settings_LangaugeChanged(object sender, EventArgs e) {
-            if (Visible) {
-                RefreshUILocale();
-            }
-
-        }
-
-        protected void AddCleanupAction(Action action) {
-            cleanupActions.Add(action);
-        }
+  
 
 
 
@@ -146,9 +127,9 @@ namespace CrossLibrary.iOS.Views {
                 this.View?.RemoveFromSuperview();
                 this.RemoveFromParentViewController();
             }
-            
             this.DismissViewController(true, null);
-
+                
+            
         }
 
         public abstract void RefreshUILocale();
@@ -160,50 +141,30 @@ namespace CrossLibrary.iOS.Views {
 
 
 
-        /// <summary>
-        /// Cleans up after every time the view did disappear
-        /// </summary>
-        public virtual void CleanUpAfterDisappearing() {
+
+
+
+
+        public override void ViewWillUnload() {
+            base.ViewDidUnload();
+            ViewModel?.ViewDestroy();
 
         }
 
-
-        /// <summary>
-        /// Invokes all actions for deregistering events
-        /// </summary>
-        public virtual void DoCleanupActions() {
-            for (int i = cleanupActions.Count - 1; i >= 0; i--) {
-                cleanupActions[i]?.Invoke();
-            }
-            cleanupActions.Clear();
-            //eventActions = null;
+        protected override void Dispose(bool disposing) {
+            base.Dispose(disposing);
+            ViewModel.ViewDisposed();
         }
 
-
-        /// <summary>
-        /// Cleans up after view did disappear and it's moving from parent view or, the parent view is being dismissed
-        /// </summary>
-        public virtual void CleanUpAfterDismiss() {
-            DoCleanupActions();
-            foreach (var disposeObject in DisposableObjects) {
-                disposeObject?.Dispose();
-            }
-            DisposableObjects?.Clear();
-            this.Dispose();
-        }
-
+    
 
         public override void DidReceiveMemoryWarning() {
             base.DidReceiveMemoryWarning();
+            ViewModel.OnLowMemory();
+            
         }
 
-        public void AddTapActionToReleaseOnDispose(UIView view, Action action) {
-            var gestureRecognizer = new UITapGestureRecognizer(action);
-            DisposableObjects.Add(gestureRecognizer);
-            view.AddGestureRecognizer(gestureRecognizer);
-            cleanupActions.Add(() => view.RemoveGestureRecognizer(gestureRecognizer));
-
-        }
+  
 
 
 
@@ -217,7 +178,7 @@ namespace CrossLibrary.iOS.Views {
 
 
 
-        
+
 
         public override void ViewDidAppear(bool animated) {
             base.ViewDidAppear(animated);
@@ -227,11 +188,14 @@ namespace CrossLibrary.iOS.Views {
 
         public override void RemoveFromParentViewController() {
             base.RemoveFromParentViewController();
-            ViewModel?.ViewDestroy();
             ViewCreated = false;
+            
         }
 
-
+        public override void DidMoveToParentViewController(UIViewController parent) {
+            base.DidMoveToParentViewController(parent);
+            ViewCreated = true;
+        }
 
 
         public override void ViewWillDisappear(bool animated) {
@@ -244,9 +208,7 @@ namespace CrossLibrary.iOS.Views {
 
         public override void ViewDidDisappear(bool animated) {
             base.ViewDidDisappear(animated);
-            CleanUpAfterDisappearing();
             if (IsBeingDismissed || IsMovingFromParentViewController) {
-                CleanUpAfterDismiss();
                 dismissedTaskCompletionSource?.TrySetResult(true);
                 GC.Collect(); //should I be doing this? probably not
             }
@@ -255,9 +217,13 @@ namespace CrossLibrary.iOS.Views {
 
         public override void ViewWillAppear(bool animated) {
             base.ViewWillAppear(animated);
-            this.NavigationController?.SetToolbarHidden(!UseToolbar, false);
+            
             ViewModel?.ViewAppearing();
         }
+
+  
+
+        
 
     }
 
