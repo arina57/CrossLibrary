@@ -73,6 +73,7 @@ namespace CrossLibrary.Droid.Views {
             }
         }
 
-
+        public void SuperCrossViewAppearing() {
+        }
     }
 }

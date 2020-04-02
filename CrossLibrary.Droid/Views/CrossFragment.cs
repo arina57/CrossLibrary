@@ -33,20 +33,7 @@ namespace CrossLibrary.Droid.Views {
         public string UnqueId { get; } = Guid.NewGuid().ToString();
         public TimeSpan TimeSinceResume => DateTime.Now.Subtract(ResumeTime);
 
-        /// <summary>
-        /// These will be disposed when vuew has been popped
-        /// </summary>
-        protected List<IDisposable> DisposableObjects = new List<IDisposable>();
-
-        //protected AppCompatActivityExtra AppCompatActivityExtra => Activity as AppCompatActivityExtra;
-        /// <summary>
-        /// Actions to unsubscribe events on destroy
-        /// </summary>
-        protected List<Action> eventUnsubscritionActions = new List<Action>();
-        /// <summary>
-        /// IDisposable to dispose on destroy
-        /// </summary>
-        protected List<IDisposable> disposableObjects = new List<IDisposable>();
+       
 
 
         private AppCompatActivity AppCompatActivity => CrossCurrentActivity.Current.Activity as AppCompatActivity;
@@ -165,18 +152,7 @@ namespace CrossLibrary.Droid.Views {
         
 
 
-        protected override void Dispose(bool disposing) {
-            foreach (var disposeObject in DisposableObjects) {
-                if (disposeObject is ImageView imageView) {
-                    imageView.Drawable.Dispose();
-                    imageView.SetImageDrawable(null);
-                }
-                disposeObject?.Dispose();
-            }
-            DisposableObjects?.Clear();
-            base.Dispose(disposing);
-        }
-
+ 
         public override void OnCreate(Bundle savedInstanceState) {
             base.OnCreate(savedInstanceState);
             
@@ -185,6 +161,8 @@ namespace CrossLibrary.Droid.Views {
         public TViewModel ViewModel { get; private set; }
 
         public bool ViewCreated { get; private set; } = false;
+
+        public bool Visible => this.Visible;
 
         public virtual void Prepare(TViewModel model) {
             if (this.ViewModel != null) {
@@ -239,9 +217,6 @@ namespace CrossLibrary.Droid.Views {
         public override void OnDestroyView() {
             base.OnDestroyView();
             ViewCreated = false;
-            eventUnsubscritionActions.ForEach(action => action.Invoke());
-            disposableObjects.ForEach(disposableObject => disposableObject.Dispose());
-            //GC.Collect(); //Shouldn't have to do this, should be done automaticall but heap keeps growing until OOM
             AboutToBeShown = false;
             dismissedTaskCompletionSource?.TrySetResult(true);
         }

@@ -161,13 +161,12 @@ namespace CrossLibrary.iOS.Views {
         public override void DidReceiveMemoryWarning() {
             base.DidReceiveMemoryWarning();
             ViewModel.OnLowMemory();
-            
         }
 
   
 
 
-
+        
         public override void ViewDidLoad() {
             ViewCreated = true;
             base.ViewDidLoad();
@@ -217,7 +216,6 @@ namespace CrossLibrary.iOS.Views {
 
         public override void ViewWillAppear(bool animated) {
             base.ViewWillAppear(animated);
-            
             ViewModel?.ViewAppearing();
         }
 

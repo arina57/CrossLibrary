@@ -1,12 +1,17 @@
 ﻿using CrossLibrary.Interfaces;
+using Newtonsoft.Json;
 using SQLite;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace CrossLibrary {
@@ -37,9 +42,11 @@ namespace CrossLibrary {
             if (crossViewModel.HasCrossView) {
                 throw new Exception("View model already has viewmodel attached");
             }
-            crossView.Prepare(crossViewModel);
             crossViewModel.crossView = crossView;
+            crossView.Prepare(crossViewModel);
+            
         }
+
 
 
         public static IEnumerable<TSource> RecursiveSelect<TSource>(
@@ -256,6 +263,35 @@ namespace CrossLibrary {
         }
 
         /// <summary>
+        /// Checks if a table exists in a SQLite database
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="asyncConnection"></param>
+        /// <returns></returns>
+        public static async Task<bool> TableExistsAsync<T>(this SQLiteAsyncConnection asyncConnection) {
+            try {
+                var tableInfo = await asyncConnection.GetTableInfoAsync(typeof(T).Name);
+                if (tableInfo.Count > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch {
+                return false;
+            }
+        }
+
+        public static bool TryGetTable<T>(this SQLiteConnection connection, out TableQuery<T> returnTable) where T : new() {
+            if (connection.TableExists<T>()) {
+                returnTable = connection.Table<T>();
+                return true;
+            } else {
+                returnTable = null;
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Makes a letter from a number.
         /// Wraps around if over max.
         /// 0 = A,
@@ -365,6 +401,43 @@ namespace CrossLibrary {
             PropertyInfo propInfo = typeof(T).GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
             EventHandlerList list = (EventHandlerList)propInfo.GetValue(target, null);
             list.RemoveHandler(eventInstance, list[eventInstance]);
+        }
+
+        public static void SerializeJsonIntoStream(object value, Stream stream) {
+            using (var streamWriter = new StreamWriter(stream, new UTF8Encoding(false), 1024, true))
+            using (var jsonTextWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.None }) {
+                var jsonSerializer = new JsonSerializer();
+                jsonSerializer.Serialize(jsonTextWriter, value);
+                jsonTextWriter.Flush();
+            }
+        }
+
+        private static T DeserializeJsonFromStream<T>(Stream stream) {
+            if (stream == null || stream.CanRead == false) {
+                return default(T);
+            }
+            using (var streamReader = new StreamReader(stream)) {
+                using (var jsonTestReader = new JsonTextReader(streamReader)) {
+                    var jsonSerializer = new JsonSerializer();
+                    var searchResult = jsonSerializer.Deserialize<T>(jsonTestReader);
+                    return searchResult;
+                }
+            }
+        }
+
+        public static HttpContent CreateHttpContent(object content) {
+            HttpContent httpContent = null;
+
+            if (content != null) {
+
+                var memoryStream = new MemoryStream();
+                SerializeJsonIntoStream(content, memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                httpContent = new StreamContent(memoryStream);
+                httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            }
+
+            return httpContent;
         }
     }
 }

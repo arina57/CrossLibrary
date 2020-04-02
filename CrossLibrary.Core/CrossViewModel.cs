@@ -20,8 +20,8 @@ namespace CrossLibrary {
         }
 
         public bool Visible => crossView?.Visible ?? false;
-      
 
+        public Task ViewCreatedTask { get; private set; }
 
         private Dictionary<string, ICrossContainerView> containerViewCache = new Dictionary<string, ICrossContainerView>();
 
@@ -61,9 +61,9 @@ namespace CrossLibrary {
             }
         }
 
-        private void DisposeView() {
+        private void RemoveView() {
             crossView?.Dismiss();
-            crossView?.Dispose();
+            //crossView?.Dispose();
             crossView = null;
         }
 
@@ -98,14 +98,14 @@ namespace CrossLibrary {
 
         public virtual void ViewDestroy() {
             RemoveSubViews();
-            DisposeView();
+            RemoveView();
 
         }
 
         private void RemoveSubViews() {
             foreach (var container in containerViewCache.Values) {
                 //container?.SubCrossViewModel?.Dismiss();
-                container?.SubCrossViewModel?.DisposeView();
+                container?.SubCrossViewModel?.RemoveView();
             }
             containerViewCache.Clear();
         }
@@ -136,10 +136,20 @@ namespace CrossLibrary {
                 viewFirstCreated = false;
                 ViewFirstCreated();
             }
+            //code will continue here without waiting for ViewCreatedAsync to complete
+            ViewCreatedTask = ViewCreatedAsync();
+        }
+        /// <summary>
+        /// This may not be finished before other lifecycle methods are run.
+        /// If you need this to be done before doing something in another
+        /// lifecycle method the await ViewCreatedTask
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task ViewCreatedAsync() {
+            return Task.CompletedTask;
         }
 
         public virtual void ViewFirstCreated() {
-
         }
 
         public void ViewDisposed() {
