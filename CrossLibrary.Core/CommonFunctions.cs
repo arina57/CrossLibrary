@@ -7,10 +7,12 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -438,6 +440,195 @@ namespace CrossLibrary {
             }
 
             return httpContent;
+        }
+
+
+
+        /// <summary>
+        /// Updates the text in intervals.
+        /// If less than 20ms have passed since last update, then it won't update, to avoid excessive ui updates
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="durationMilis"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="formattedString"></param>
+        /// <returns></returns>
+        public static async Task AnimateTextNumberAsync(Action<string> action, int durationMilis, int from, int to, string formattedString = "{0}", CancellationToken cancellationToken = default) {
+            if (from != to) {
+                int lenght = Math.Abs(from - to);
+                var delayPerLoop = durationMilis / lenght;
+                var delaySinceLastDisplay = 0;
+                const int displayMinDelay = 20;
+                action.Invoke(string.Format(formattedString, from));
+                for (int i = 0; i <= lenght; i++) {
+                    if (cancellationToken.IsCancellationRequested) {
+                        return;
+                    }
+
+                    if (delaySinceLastDisplay >= displayMinDelay) {
+                        int step = from < to ? from + i : to + lenght - i;
+                        action.Invoke(string.Format(formattedString, step));
+                    }
+
+
+                    try {
+                        await Task.Delay(delayPerLoop, cancellationToken);
+                    } catch (TaskCanceledException) {
+                        return;
+                    }
+                    delaySinceLastDisplay += delayPerLoop;
+
+                }
+            }
+            action.Invoke(string.Format(formattedString, to));
+        }
+
+
+        /// <summary>
+        /// Updates the text in intervals.
+        /// If less than 20ms have passed since last update, then it won't update, to avoid excessive ui updates
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="durationMilis"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="formattedString"></param>
+        /// <returns></returns>
+        public static async Task AnimateTextNumberAsync(Action<string> action, int from, int to, string formattedString = "{0}", CancellationToken cancellationToken = default, int frequency = 5) {
+            if (from != to) {
+                int lenght = Math.Abs(from - to);
+                var delaySinceLastDisplay = 0;
+                const int displayMinDelay = 20;
+                action.Invoke(string.Format(formattedString, from));
+                var delay = 1000 / frequency;
+                for (int i = 0; i <= lenght; i++) {
+
+                    if (cancellationToken.IsCancellationRequested) {
+                        return;
+                    }
+
+                    if (delaySinceLastDisplay >= displayMinDelay) {
+                        int step = from < to ? from + i : to + lenght - i;
+                        action.Invoke(string.Format(formattedString, step));
+                    }
+                    try {
+                        await Task.Delay(delay, cancellationToken);
+                    } catch (TaskCanceledException) {
+                        return;
+                    }
+                    
+                    delaySinceLastDisplay += delay;
+
+                }
+            }
+            action.Invoke(string.Format(formattedString, to));
+        }
+
+
+        /// <summary>
+        /// Updates the text in intervals.
+        /// If less than 20ms have passed since last update, then it won't update, to avoid excessive ui updates
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="durationMilis"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static async Task AnimateTextValuesAsync(Action<string> action, int durationMilis, CancellationToken cancellationToken = default, params string[] values) {
+            if (values.Length > 0) {
+                var delayPerLoop = durationMilis / values.Length;
+                var delaySinceLastDisplay = 0;
+                const int displayMinDelay = 20;
+                action.Invoke(values[0]);
+                foreach (var value in values) {
+                    if (cancellationToken.IsCancellationRequested) {
+                        return;
+                    }
+
+                    if (delaySinceLastDisplay >= displayMinDelay) {
+                        action.Invoke(value);
+                    }
+                    
+                    await Task.Delay(delayPerLoop, cancellationToken);
+                    delaySinceLastDisplay += delayPerLoop;
+                }
+                if (!cancellationToken.IsCancellationRequested) {
+                    action.Invoke(values.Last());
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Updates the text in intervals.
+        /// If less than 20ms have passed since last update, then it won't update, to avoid excessive ui updates
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="durationMilis"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static async Task AnimateTextValuesAsync(Action<string> action, CancellationToken cancellationToken = default, int frequency = 5, params string[] values) {
+            if (values.Length > 0) {
+                var delayPerLoop = 1000 / frequency;
+                var delaySinceLastDisplay = 0;
+                const int displayMinDelay = 20;
+                action.Invoke(values[0]);
+                foreach (var value in values) {
+                    if (cancellationToken.IsCancellationRequested) {
+                        return;
+                    }
+
+                    if (delaySinceLastDisplay >= displayMinDelay) {
+                        action.Invoke(value);
+                    }
+
+                    try {
+                        await Task.Delay(delayPerLoop, cancellationToken);
+                    } catch (TaskCanceledException) {
+                        return;
+                    }
+                    delaySinceLastDisplay += delayPerLoop;
+                }
+                
+                action.Invoke(values.Last());
+                
+            }
+
+        }
+
+
+        /// <summary>
+        /// Updates float in 20ms intervals
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="durationMilis"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="formattedString"></param>
+        /// <returns></returns>
+        public static async Task AnimateFloatValueAsync(Action<float> action, int durationMilis, float from, float to, int frequency = 50, CancellationToken cancellationToken = default) {
+            if (from != to) {
+                var displayDelay = 1000 / frequency;
+                var stepCount = durationMilis / (float)displayDelay;
+                var stepAmount =  (to - from) / stepCount;
+                var currentValue = from;
+                action.Invoke(currentValue);
+                for (int i = 0; i <= stepCount; i++) {
+                    if (cancellationToken.IsCancellationRequested) {
+                        return;
+                    }
+
+                    currentValue += stepAmount;
+                    action.Invoke(currentValue);
+                    try {
+                        await Task.Delay(displayDelay, cancellationToken);
+                    } catch (TaskCanceledException) {
+                        return;
+                    }
+                    
+                }
+            }
+            action.Invoke(to);
         }
     }
 }

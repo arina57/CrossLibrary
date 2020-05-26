@@ -11,9 +11,9 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using CrossLibrary.Interfaces;
-using Android.Support.V4.App;
 using Plugin.CurrentActivity;
-using Android.Support.V7.App;
+using AndroidX.Fragment.App;
+using AndroidX.AppCompat.App;
 
 namespace CrossLibrary.Droid.Views {
     [Register("crosslibrary.droid.views.CrossContainerView")]

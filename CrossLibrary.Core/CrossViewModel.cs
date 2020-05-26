@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace CrossLibrary {
@@ -99,8 +101,10 @@ namespace CrossLibrary {
         public virtual void ViewDestroy() {
             RemoveSubViews();
             RemoveView();
-
+            UnbindAll();
+            
         }
+
 
         private void RemoveSubViews() {
             foreach (var container in containerViewCache.Values) {
@@ -158,6 +162,131 @@ namespace CrossLibrary {
 
         public void OnLowMemory() {
             
+        }
+
+        /// <summary>
+        /// Perform actions bound to that property
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="property"></param>
+        public void ProperyChanged<T>(Expression<Func<T>> property) {
+            var memberExpression = property.Body as MemberExpression;
+            var propertyName = (memberExpression.Member as PropertyInfo).Name;
+            
+            //Find matching actions for item
+            var matchingActions = actions.Where(item => item.Item1 == propertyName && item.Item2 is Action<T> && item.Item3 is Func<T>);
+            foreach (var item in matchingActions) {
+                var value = (item.Item3 as Func<T>).Invoke();
+                var action = item.Item2 as Action<T>;
+                action.Invoke(value);
+            }
+            
+        }
+
+
+        /// <summary>
+        /// Bind action to view model property.
+        /// eg Bind(value => TextView.Text = value, viewModel => viewModel.TextValue)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TViewModel"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="binding"></param>
+        /// <returns></returns>
+        public Action<T> Bind<T, TViewModel>(Action<T> action, Expression<Func<TViewModel, T>> binding) where TViewModel : CrossViewModel {
+            
+
+            if (this is TViewModel viewModel) {
+                var memberExpression = binding.Body as MemberExpression;
+                var propertyName = GetPropertyName(binding);
+                //Compile expression on binding, compiling is expensive so do it as little as possible.
+                var compiledBinding = binding.Compile();
+                Func<T> convertedBinding = () => compiledBinding.Invoke(viewModel);
+                var actionPair = (propertyName, action, convertedBinding);
+                //remove action if it is already bound to the same property
+                actions.RemoveAll(item => (item.Item2 as Action<T>) == action && item.Item1 == propertyName);
+                actions.Add(actionPair);
+
+                //assign on bind.
+                var value = convertedBinding.Invoke();
+                action.Invoke(value);
+
+                return action;
+            } else {
+                throw new Exception("ViewModel must be of the same type as TViewModel");
+            }
+
+
+        }
+
+        /// <summary>
+        /// Unbind all properties from matching action.
+        /// Must be reference to originally bound Action.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="actionRefernce"></param>
+        public void Unbind<T>(Action<T> actionRefernce) {
+            actions.RemoveAll(a => (a.Item2 as Action<T>) == (actionRefernce));
+        }
+
+
+        /// <summary>
+        /// Unbind action for property
+        /// Must be reference to originally bound Action.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TViewModel"></typeparam>
+        /// <param name="actionRefernce"></param>
+        /// <param name="binding"></param>
+        public void Unbind<T, TViewModel>(Action<T> actionRefernce, Expression<Func<TViewModel, T>> binding) where TViewModel : CrossViewModel {
+            var propertyName = GetPropertyName(binding);
+            actions.RemoveAll(a => (a.Item2 as Action<T>) == (actionRefernce) && a.Item1 == propertyName);
+        }
+
+        /// <summary>
+        /// Unbind all action for given property.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TViewModel"></typeparam>
+        /// <param name="binding"></param>
+        public void Unbind<T, TViewModel>(Expression<Func<TViewModel, T>> binding) where TViewModel : CrossViewModel {
+            var propertyName = GetPropertyName(binding);
+            actions.RemoveAll(a => a.Item1 == propertyName);
+        }
+
+        /// <summary>
+        /// Actions and property.
+        /// Property name, binding Action<T>, compiled Func<T>
+        /// </summary>
+        List<(string, object, object)> actions = new List<(string, object, object)>();
+
+
+        /// <summary>
+        /// Unbinds all bound actions and properties
+        /// </summary>
+        public void UnbindAll() {
+            actions.Clear();
+        }
+
+        /// <summary>
+        /// Gets the string name for a property
+        /// </summary>
+        /// <typeparam name="TViewModel"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="binding"></param>
+        /// <returns></returns>
+        private static string GetPropertyName<TViewModel, T>(Expression<Func<TViewModel, T>> binding) where TViewModel : CrossViewModel {
+            var memberExpression = binding.Body as MemberExpression;
+            var propertyName = (memberExpression.Member as PropertyInfo).Name;
+            return propertyName;
+        }
+
+        public void RefreshBindings() {
+            foreach (var item in actions) {
+                var value = (item.Item3 as dynamic).Invoke();
+                var action = item.Item2 as dynamic;
+                action.Invoke(value);
+            }
         }
     }
 }

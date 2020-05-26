@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
     <AndroidUseManagedDesignTimeResourceGenerator>False</AndroidUseManagedDesignTimeResourceGenerator>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -42,7 +42,7 @@
     <DebugType>portable</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -71,7 +71,7 @@
       <Version>2.1.0.4</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.1.0" />
-  <PackageReference Include="Xamarin.AndroidX.Migration" Version="1.0.1" /></ItemGroup>
+</ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\strings.xml" />
   </ItemGroup>
@@ -80,7 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CrossLibrary.Core\CrossLibrary.Core.csproj">
-      <Project>{B23684E5-07EC-472C-B140-23FDBFAB1BAA}</Project>
+      <Project>{0955EB89-956C-462F-8077-D27CF2858ACD}</Project>
       <Name>CrossLibrary.Core</Name>
     </ProjectReference>
   </ItemGroup>

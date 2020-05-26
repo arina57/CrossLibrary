@@ -5,6 +5,7 @@ using UIKit;
 using System.Threading.Tasks;
 using CrossLibrary.Interfaces;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace CrossLibrary.iOS.Views {
     public abstract class CrossUIViewController<TViewModel> : UIViewController, ICrossView, ICrossView<TViewModel> where TViewModel : CrossViewModel {
@@ -219,9 +220,64 @@ namespace CrossLibrary.iOS.Views {
             ViewModel?.ViewAppearing();
         }
 
-  
 
-        
+        /// <summary>
+        /// Binds an action to a view model property.
+        /// eg Bind(value => TextView.Text = value, viewModel => viewModel.TextValue)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="binding"></param>
+        /// <returns></returns>
+        public Action<T> Bind<T>(Action<T> action, Expression<Func<TViewModel, T>> binding) {
+            return ViewModel.Bind(action, binding);
+        }
+
+        /// <summary>
+        /// Binds text to View Model property.
+        /// eg Bind(label, viewModel => viewModel.LabelText)
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="binding"></param>
+        /// <returns>Returns action, so it can be unbound later</returns>
+        public Action<string> BindText(UILabel label, Expression<Func<TViewModel, string>> binding) {
+            return ViewModel.Bind(value => label.Text = value, binding);
+        }
+
+        /// <summary>
+        /// Binds the visiblity of a view to a view model property
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="binding"></param>
+        /// <returns></returns>
+        public Action<bool> BindVisiblitiy(UIView view, Expression<Func<TViewModel, bool>> binding) {
+            return ViewModel.Bind(value => view.Hidden = !value, binding);
+        }
+
+        /// <summary>
+        /// Binds views alpha to view model property
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="binding"></param>
+        /// <returns></returns>
+        public Action<float> BindAlpha(UIView view, Expression<Func<TViewModel, float>> binding) {
+            return ViewModel.Bind(value => view.Alpha = value, binding);
+        }
+
+        /// <summary>
+        /// Unbinds all property bound to specified action
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="actionReference"></param>
+        public void Unbind<T>(Action<T> actionReference) {
+            ViewModel.Unbind(actionReference);
+        }
+
+        /// <summary>
+        /// Removes all bindings
+        /// </summary>
+        public void UnbindAll() => ViewModel.UnbindAll();
+
 
     }
 

@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
-using Android.Support.V4.App;
-using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.App;
+using AndroidX.Fragment.App;
 using CrossLibrary.Interfaces;
 using Plugin.CurrentActivity;
 
@@ -228,6 +224,63 @@ namespace CrossLibrary.Droid.Views {
         }
 
 
+
+        /// <summary>
+        /// Binds an action to a view model property.
+        /// eg Bind(value => TextView.Text = value, viewModel => viewModel.TextValue)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="binding"></param>
+        /// <returns></returns>
+        public Action<T> Bind<T>(Action<T> action, Expression<Func<TViewModel, T>> binding) {
+            return ViewModel.Bind(action, binding);
+        }
+
+        /// <summary>
+        /// Binds text to View Model property.
+        /// eg Bind(label, viewModel => viewModel.LabelText)
+        /// </summary>
+        /// <param name="textView"></param>
+        /// <param name="binding"></param>
+        /// <returns>Returns action, so it can be unbound later</returns>
+        public Action<string> BindText(TextView textView, Expression<Func<TViewModel, string>> binding) {
+            return ViewModel.Bind(value => textView.Text = value, binding);
+        }
+
+        /// <summary>
+        /// Binds the visiblity of a view to a view model property
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="binding"></param>
+        /// <returns></returns>
+        public Action<bool> BindVisiblitiy(View view, Expression<Func<TViewModel, bool>> binding) {
+            return ViewModel.Bind(value => view.Visibility = value ? ViewStates.Visible : ViewStates.Invisible, binding);
+        }
+
+        /// <summary>
+        /// Binds views alpha to view model property
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="binding"></param>
+        /// <returns></returns>
+        public Action<float> BindAlpha(View view, Expression<Func<TViewModel, float>> binding) {
+            return ViewModel.Bind(value => view.Alpha = value, binding);
+        }
+
+        /// <summary>
+        /// Unbinds all property bound to specified action
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="actionReference"></param>
+        public void Unbind<T>(Action<T> actionReference) {
+            ViewModel.Unbind(actionReference);
+        }
+
+        /// <summary>
+        /// Removes all bindings
+        /// </summary>
+        public void UnbindAll() => ViewModel.UnbindAll();
 
     }
 
