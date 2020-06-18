@@ -2,14 +2,14 @@
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using CrossLibrary.Dependency;
 using CrossLibrary.Interfaces;
 using CrossLibrary.iOS;
 using Foundation;
 using SharedLibrary.iOS.InterfaceImplimentations;
 using UIKit;
-using Xamarin.Forms;
 
-[assembly: Dependency(typeof(CrossFunctions))]
+[assembly: CrossDependency(typeof(CrossFunctions))]
 namespace SharedLibrary.iOS.InterfaceImplimentations {
 
     /// <summary>

@@ -1,9 +1,11 @@
-﻿using CrossLibrary.Interfaces;
+﻿using CrossLibrary.Dependency;
+using CrossLibrary.Interfaces;
 using Newtonsoft.Json;
 using SQLite;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,7 +16,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Xamarin.Forms;
 
 namespace CrossLibrary {
     /// <summary>
@@ -25,7 +26,7 @@ namespace CrossLibrary {
         /// <summary>
         /// This is just here so there doesn't need to be a bunch of ugly dependency injection calls through out the code
         /// </summary>
-        public static ICrossFunctions CrossFunctions = DependencyService.Get<ICrossFunctions>(DependencyFetchTarget.GlobalInstance);
+        public static ICrossFunctions CrossFunctions = CrossViewDependencyService.Get<ICrossFunctions>(CrossViewDependencyService.DependencyFetchTarget.GlobalInstance);
 
 
         /// <summary>
@@ -120,7 +121,8 @@ namespace CrossLibrary {
 
 
 
-        private static readonly Random staticRandom = new Random();
+        public static Random StaticRandom { get; } = new Random();
+
         /// <summary>
         /// Shuffles an array using a <see cref="Random"/>
         /// </summary>
@@ -130,7 +132,7 @@ namespace CrossLibrary {
             int n = list.Count;
             while (n > 1) {
                 n--;
-                int k = staticRandom.Next(n + 1);
+                int k = StaticRandom.Next(n + 1);
                 T value = list[k];
                 list[k] = list[n];
                 list[n] = value;
@@ -323,7 +325,8 @@ namespace CrossLibrary {
             var g = (endColor.G - startColor.G) / (steps);
             var a = (endColor.A - startColor.A) / (steps);
             for (var i = 0; i <= steps; i++) {
-                gradient.Add(new Color(startColor.R + r * i, startColor.G + g * i, startColor.B + b * i, startColor.A + a * i));
+                var newColor = Color.FromArgb(startColor.A + a * i, startColor.R + r * i, startColor.G + g * i, startColor.B + b * i);
+                gradient.Add(newColor);
             }
 
             return gradient;
@@ -359,16 +362,16 @@ namespace CrossLibrary {
 
             var words = loremIpsum.Split(' ');
 
-            int numSentences = staticRandom.Next(maxSentences - minSentences)
+            int numSentences = StaticRandom.Next(maxSentences - minSentences)
                 + minSentences;
-            int numWords = staticRandom.Next(maxWords - minWords) + minWords;
+            int numWords = StaticRandom.Next(maxWords - minWords) + minWords;
 
             var sb = new StringBuilder();
             for (int p = 0; p < numLines; p++) {
                 for (int s = 0; s < numSentences; s++) {
                     for (int w = 0; w < numWords; w++) {
                         if (w > 0) { sb.Append(" "); }
-                        string word = words[staticRandom.Next(words.Length)];
+                        string word = words[StaticRandom.Next(words.Length)];
                         if (w == 0) { word = word.Substring(0, 1).Trim().ToUpper() + word.Substring(1); }
                         sb.Append(word);
                     }

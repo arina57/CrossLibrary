@@ -180,9 +180,7 @@ namespace CrossLibrary {
                 var action = item.Item2 as Action<T>;
                 action.Invoke(value);
             }
-            
         }
-
 
         /// <summary>
         /// Bind action to view model property.

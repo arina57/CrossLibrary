@@ -1,15 +1,15 @@
 ﻿using System;
 using Android.Content;
 using Android.Widget;
-using Xamarin.Forms;
 using System.Globalization;
 using Java.Util;
 using System.IO;
 using CrossLibrary.Interfaces;
 using Plugin.CurrentActivity;
 using CrossLibrary.Droid.CrossPlatformImplimentations;
+using CrossLibrary.Dependency;
 
-[assembly: Dependency(typeof(CrossFunctions))]
+[assembly: CrossDependency(typeof(CrossFunctions))]
 namespace CrossLibrary.Droid.CrossPlatformImplimentations {
     /// <summary>
     /// Android Implimentation of ICrossFunctions

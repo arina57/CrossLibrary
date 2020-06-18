@@ -3,9 +3,9 @@ using System;
 
 namespace CrossLibrary.Dependency { 
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-	public sealed class CrossViewAttribute : Attribute
+	public sealed class CrossDependencyAttribute : Attribute
 	{
-		public CrossViewAttribute(Type implementorType, string storyBoardIdentifier = "", string storyboardName = "", string id = "")
+		public CrossDependencyAttribute(Type implementorType, string storyBoardIdentifier = "", string storyboardName = "", string id = "")
 		{
             DependencyInfo = new CrossViewImplementorInfo(implementorType, storyBoardIdentifier, storyboardName, id);
         }
