@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CrossLibrary.Core\CrossLibrary.Core.csproj">
-      <Project>{B23684E5-07EC-472C-B140-23FDBFAB1BAA}</Project>
+      <Project>{0109B181-5160-47CE-AC1E-0C766E69E841}</Project>
       <Name>CrossLibrary.Core</Name>
     </ProjectReference>
   </ItemGroup>

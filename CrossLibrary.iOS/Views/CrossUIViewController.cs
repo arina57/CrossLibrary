@@ -133,7 +133,7 @@ namespace CrossLibrary.iOS.Views {
             
         }
 
-        public abstract void RefreshUILocale();
+        public virtual void RefreshUILocale() { }
 
         public IEnumerable<T> FindViewsOfTypeInTree<T>() where T : class {
             return this.View.FindViewsOfTypeInTree<T>();
@@ -244,6 +244,11 @@ namespace CrossLibrary.iOS.Views {
             return ViewModel.Bind(value => label.Text = value, binding);
         }
 
+        public Action<string> BindText(UIButton label, Expression<Func<TViewModel, string>> binding) {
+            return ViewModel.Bind(value => label.SetTitle(value, UIControlState.Normal), binding);
+        }
+
+
         /// <summary>
         /// Binds the visiblity of a view to a view model property
         /// </summary>
@@ -264,6 +269,26 @@ namespace CrossLibrary.iOS.Views {
             return ViewModel.Bind(value => view.Alpha = value, binding);
         }
 
+        public UITapGestureRecognizer BindClick(UIView view, Func<TViewModel, EventHandler> binding) {
+            var action = binding.Invoke(ViewModel);
+            var gestureRecogniser = new UITapGestureRecognizer(() => action.Invoke(view, EventArgs.Empty));
+            view.AddGestureRecognizer(gestureRecogniser);
+            boundClickActions.Add(view, gestureRecogniser);
+            return gestureRecogniser;
+        }
+
+
+
+        Dictionary<UIView, UIGestureRecognizer> boundClickActions = new Dictionary<UIView, UIGestureRecognizer>();
+
+        public void Unbind(UIView view, UITapGestureRecognizer binding) {
+            view.RemoveGestureRecognizer(binding);
+            binding.Dispose();
+            boundClickActions.Remove(view);
+        }
+
+
+
         /// <summary>
         /// Unbinds all property bound to specified action
         /// </summary>
@@ -278,7 +303,13 @@ namespace CrossLibrary.iOS.Views {
         /// </summary>
         public void UnbindAll() => ViewModel.UnbindAll();
 
-
+        public void UnbindAllClicks() {
+            foreach (var clickAction in boundClickActions) {
+                clickAction.Key.RemoveGestureRecognizer(clickAction.Value);
+                clickAction.Value.Dispose();
+            }
+            boundClickActions.Clear();
+        }
     }
 
 

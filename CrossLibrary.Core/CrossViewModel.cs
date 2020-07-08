@@ -99,6 +99,7 @@ namespace CrossLibrary {
         }
 
         public virtual void ViewDestroy() {
+            CrossView.UnbindAllClicks();
             RemoveSubViews();
             RemoveView();
             UnbindAll();
@@ -195,7 +196,6 @@ namespace CrossLibrary {
             
 
             if (this is TViewModel viewModel) {
-                var memberExpression = binding.Body as MemberExpression;
                 var propertyName = GetPropertyName(binding);
                 //Compile expression on binding, compiling is expensive so do it as little as possible.
                 var compiledBinding = binding.Compile();
@@ -216,6 +216,8 @@ namespace CrossLibrary {
 
 
         }
+
+        
 
         /// <summary>
         /// Unbind all properties from matching action.
@@ -274,9 +276,14 @@ namespace CrossLibrary {
         /// <param name="binding"></param>
         /// <returns></returns>
         private static string GetPropertyName<TViewModel, T>(Expression<Func<TViewModel, T>> binding) where TViewModel : CrossViewModel {
-            var memberExpression = binding.Body as MemberExpression;
-            var propertyName = (memberExpression.Member as PropertyInfo).Name;
-            return propertyName;
+            var body = binding.Body;
+            if(body is MemberExpression memberExpression) {
+                var propertyName = (memberExpression.Member as PropertyInfo).Name;
+                return propertyName;
+            } else {
+                throw new Exception("must be a property");
+            }
+            
         }
 
         public void RefreshBindings() {

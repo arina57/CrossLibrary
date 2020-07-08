@@ -498,7 +498,7 @@ namespace CrossLibrary {
         /// <param name="to"></param>
         /// <param name="formattedString"></param>
         /// <returns></returns>
-        public static async Task AnimateTextNumberAsync(Action<string> action, int from, int to, string formattedString = "{0}", CancellationToken cancellationToken = default, int frequency = 5) {
+        public static async Task AnimateTextNumberSpeedAsync(Action<string> action, int from, int to, string formattedString = "{0}", CancellationToken cancellationToken = default, int frequency = 5) {
             if (from != to) {
                 int lenght = Math.Abs(from - to);
                 var delaySinceLastDisplay = 0;
@@ -521,6 +521,46 @@ namespace CrossLibrary {
                         return;
                     }
                     
+                    delaySinceLastDisplay += delay;
+
+                }
+            }
+            action.Invoke(string.Format(formattedString, to));
+        }
+
+        /// <summary>
+        /// Updates the text in intervals.
+        /// If less than 20ms have passed since last update, then it won't update, to avoid excessive ui updates
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="durationMilis"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="formattedString"></param>
+        /// <returns></returns>
+        public static async Task AnimateTextNumberAsync(Action<string> action, int from, int to, string formattedString = "{0}", CancellationToken cancellationToken = default, int durationMs = 1000) {
+            if (from != to) {
+                int lenght = Math.Abs(from - to);
+                var delaySinceLastDisplay = 0;
+                const int displayMinDelay = 20;
+                action.Invoke(string.Format(formattedString, from));
+                var delay = durationMs / lenght;
+                for (int i = 0; i <= lenght; i++) {
+
+                    if (cancellationToken.IsCancellationRequested) {
+                        return;
+                    }
+
+                    if (delaySinceLastDisplay >= displayMinDelay) {
+                        int step = from < to ? from + i : to + lenght - i;
+                        action.Invoke(string.Format(formattedString, step));
+                    }
+                    try {
+                        await Task.Delay(delay, cancellationToken);
+                    } catch (TaskCanceledException) {
+                        return;
+                    }
+
                     delaySinceLastDisplay += delay;
 
                 }

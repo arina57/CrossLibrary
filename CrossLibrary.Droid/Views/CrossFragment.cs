@@ -29,7 +29,7 @@ namespace CrossLibrary.Droid.Views {
         public string UnqueId { get; } = Guid.NewGuid().ToString();
         public TimeSpan TimeSinceResume => DateTime.Now.Subtract(ResumeTime);
 
-       
+
 
 
         private AppCompatActivity AppCompatActivity => CrossCurrentActivity.Current.Activity as AppCompatActivity;
@@ -129,7 +129,7 @@ namespace CrossLibrary.Droid.Views {
 
 
         public IEnumerable<T> FindViewsOfTypeInTree<T>() where T : class {
-            using(new DebugHelper.Timer()) {
+            using (new DebugHelper.Timer()) {
                 return this.View.FindViewsOfTypeInTree<T>();
             }
         }
@@ -145,13 +145,13 @@ namespace CrossLibrary.Droid.Views {
             }
         }
 
-        
 
 
- 
+
+
         public override void OnCreate(Bundle savedInstanceState) {
             base.OnCreate(savedInstanceState);
-            
+
         }
 
         public TViewModel ViewModel { get; private set; }
@@ -178,7 +178,7 @@ namespace CrossLibrary.Droid.Views {
             ViewModel?.ViewAppearing();
         }
 
-        
+
 
         public override void OnPause() {
             base.OnPause();
@@ -268,20 +268,48 @@ namespace CrossLibrary.Droid.Views {
             return ViewModel.Bind(value => view.Alpha = value, binding);
         }
 
+
+        public EventHandler BindClick(View view, Func<TViewModel, EventHandler> binding) {
+            var action = binding.Invoke(ViewModel);
+            view.Click += action;
+            BoundClickActions.Add(view, action);
+            return action;
+        }
+
+        Dictionary<View, EventHandler> BoundClickActions = new Dictionary<View, EventHandler>();
+
+        public void Unbind(View view, EventHandler binding) {
+            view.Click -= binding;
+            BoundClickActions.Remove(view);
+        }
+
+
+
+
         /// <summary>
         /// Unbinds all property bound to specified action
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="actionReference"></param>
+        /// <param name="actionReference"></param>z
         public void Unbind<T>(Action<T> actionReference) {
             ViewModel.Unbind(actionReference);
         }
 
+
+
         /// <summary>
         /// Removes all bindings
         /// </summary>
-        public void UnbindAll() => ViewModel.UnbindAll();
+        public void UnbindAll() {
+            UnbindAllClicks();
+            ViewModel.UnbindAll();
+        }
 
+        public void UnbindAllClicks() {
+            foreach (var clickAction in BoundClickActions) {
+                clickAction.Key.Click -= clickAction.Value;
+            }
+        }
     }
 
 

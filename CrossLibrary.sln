@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29230.47
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossLibrary.Core", "CrossLibrary.Core\CrossLibrary.Core.csproj", "{0955EB89-956C-462F-8077-D27CF2858ACD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLibrary.Core", "CrossLibrary.Core\CrossLibrary.Core.csproj", "{0109B181-5160-47CE-AC1E-0C766E69E841}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLibrary.Droid", "CrossLibrary.Droid\CrossLibrary.Droid.csproj", "{CC33E7DB-5126-40E6-AE8E-11307EE36A24}"
 EndProject
@@ -15,10 +15,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0955EB89-956C-462F-8077-D27CF2858ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0955EB89-956C-462F-8077-D27CF2858ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0955EB89-956C-462F-8077-D27CF2858ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0955EB89-956C-462F-8077-D27CF2858ACD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0109B181-5160-47CE-AC1E-0C766E69E841}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0109B181-5160-47CE-AC1E-0C766E69E841}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0109B181-5160-47CE-AC1E-0C766E69E841}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0109B181-5160-47CE-AC1E-0C766E69E841}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CC33E7DB-5126-40E6-AE8E-11307EE36A24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC33E7DB-5126-40E6-AE8E-11307EE36A24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC33E7DB-5126-40E6-AE8E-11307EE36A24}.Release|Any CPU.ActiveCfg = Release|Any CPU

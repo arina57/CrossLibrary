@@ -268,6 +268,7 @@ namespace CrossLibrary {
         }
 
 
+   
         public static Color WithNewLightness(this Color color, float lightness) {
             var saturation = color.GetSaturation();
             var hue = color.GetHue() / 360;
