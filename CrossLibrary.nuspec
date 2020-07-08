@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package >
   <metadata>
-    <id>com.arina57.crosslibrary.droid</id>
+    <id>com.arina57.crosslibrary</id>
     <version>1.0.0</version>
     <authors>Arina Anjong</authors>
     <owners>Arina Anjong</owners>
