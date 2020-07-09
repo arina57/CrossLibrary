@@ -55,9 +55,10 @@
     <Compile Include="CrossPlatformImplimentations\CrossFunctions.cs" />
     <Compile Include="PlatformFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UIPaddingLabel.cs" />
     <Compile Include="Views\CrossContainerView.cs" />
     <Compile Include="Views\CrossUIViewController.cs" />
+    <Compile Include="CrossAppDelegate.cs" />
+    <Compile Include="Views\UIPaddingLabel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CrossLibrary.Core\CrossLibrary.Core.csproj">
