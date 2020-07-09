@@ -8,7 +8,11 @@ using System.Linq;
 using System.Linq.Expressions;
 
 namespace CrossLibrary.iOS.Views {
-    public abstract class CrossUIViewController<TViewModel> : UIViewController, ICrossView, ICrossView<TViewModel> where TViewModel : CrossViewModel {
+    public abstract class PlatformCrossView<TViewModel> : CrossUIViewController<TViewModel>, ICrossView, ICrossView<TViewModel> where TViewModel : CrossViewModel { }
+
+        public abstract class CrossUIViewController<TViewModel> : UIViewController, ICrossView, ICrossView<TViewModel> where TViewModel : CrossViewModel {
+
+
 
         TaskCompletionSource<bool> dismissedTaskCompletionSource;
         TaskCompletionSource<object> loadedTaskCompletionSource = new TaskCompletionSource<object>();

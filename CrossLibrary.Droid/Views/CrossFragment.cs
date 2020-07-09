@@ -12,6 +12,9 @@ using Plugin.CurrentActivity;
 
 namespace CrossLibrary.Droid.Views {
 
+    public abstract class PlatformCrossView<TViewModel> : CrossFragment<TViewModel>, ICrossView, ICrossView<TViewModel> where TViewModel : CrossViewModel {
+    }
+
     public abstract class CrossFragment : CrossFragment<CrossViewModel>, ICrossView, ICrossView<CrossViewModel> {
     }
 
@@ -125,7 +128,7 @@ namespace CrossLibrary.Droid.Views {
 
 
 
-        public abstract void RefreshUILocale();
+        public virtual void RefreshUILocale() { }
 
 
         public IEnumerable<T> FindViewsOfTypeInTree<T>() where T : class {
