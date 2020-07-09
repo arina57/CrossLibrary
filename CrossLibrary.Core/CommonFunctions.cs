@@ -1,7 +1,6 @@
 ﻿using CrossLibrary.Dependency;
 using CrossLibrary.Interfaces;
 using Newtonsoft.Json;
-using SQLite;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -254,46 +253,7 @@ namespace CrossLibrary {
 
 
 
-        /// <summary>
-        /// Checks if a table exists in a SQLite database
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connection"></param>
-        /// <returns></returns>
-        public static bool TableExists<T>(this SQLiteConnection connection) {
-            const string cmdText = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
-            var cmd = connection.CreateCommand(cmdText, typeof(T).Name);
-            return cmd.ExecuteScalar<string>() != null;
-        }
-
-        /// <summary>
-        /// Checks if a table exists in a SQLite database
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="asyncConnection"></param>
-        /// <returns></returns>
-        public static async Task<bool> TableExistsAsync<T>(this SQLiteAsyncConnection asyncConnection) {
-            try {
-                var tableInfo = await asyncConnection.GetTableInfoAsync(typeof(T).Name);
-                if (tableInfo.Count > 0) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch {
-                return false;
-            }
-        }
-
-        public static bool TryGetTable<T>(this SQLiteConnection connection, out TableQuery<T> returnTable) where T : new() {
-            if (connection.TableExists<T>()) {
-                returnTable = connection.Table<T>();
-                return true;
-            } else {
-                returnTable = null;
-                return false;
-            }
-        }
+      
 
         /// <summary>
         /// Makes a letter from a number.
