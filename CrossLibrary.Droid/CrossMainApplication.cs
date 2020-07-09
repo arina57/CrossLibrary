@@ -6,6 +6,7 @@ using CrossLibrary.Core;
 using Plugin.CurrentActivity;
 
 namespace CrossLibrary.Droid {
+    [Application]
     public abstract class CrossMainApplication : Application, Application.IActivityLifecycleCallbacks {
         public CrossMainApplication(IntPtr handle, JniHandleOwnership transer)
           : base(handle, transer) {
