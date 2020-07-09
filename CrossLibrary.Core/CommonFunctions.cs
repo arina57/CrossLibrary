@@ -1,6 +1,5 @@
 ﻿using CrossLibrary.Dependency;
 using CrossLibrary.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -368,42 +367,8 @@ namespace CrossLibrary {
             list.RemoveHandler(eventInstance, list[eventInstance]);
         }
 
-        public static void SerializeJsonIntoStream(object value, Stream stream) {
-            using (var streamWriter = new StreamWriter(stream, new UTF8Encoding(false), 1024, true))
-            using (var jsonTextWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.None }) {
-                var jsonSerializer = new JsonSerializer();
-                jsonSerializer.Serialize(jsonTextWriter, value);
-                jsonTextWriter.Flush();
-            }
-        }
 
-        private static T DeserializeJsonFromStream<T>(Stream stream) {
-            if (stream == null || stream.CanRead == false) {
-                return default(T);
-            }
-            using (var streamReader = new StreamReader(stream)) {
-                using (var jsonTestReader = new JsonTextReader(streamReader)) {
-                    var jsonSerializer = new JsonSerializer();
-                    var searchResult = jsonSerializer.Deserialize<T>(jsonTestReader);
-                    return searchResult;
-                }
-            }
-        }
 
-        public static HttpContent CreateHttpContent(object content) {
-            HttpContent httpContent = null;
-
-            if (content != null) {
-
-                var memoryStream = new MemoryStream();
-                SerializeJsonIntoStream(content, memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                httpContent = new StreamContent(memoryStream);
-                httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            }
-
-            return httpContent;
-        }
 
 
 

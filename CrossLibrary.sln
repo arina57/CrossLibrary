@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLibrary.Droid", "Cross
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLibrary.iOS", "CrossLibrary.iOS\CrossLibrary.iOS.csproj", "{2A078BB1-81ED-4FA3-B48F-E2107E67270C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{922CAE41-CE85-48E0-B814-3AB55850BFCD}"
+	ProjectSection(SolutionItems) = preProject
+		CrossLibrary.nuspec = CrossLibrary.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
