@@ -2637,34 +2637,37 @@ namespace CrossLibrary.Droid
 			public static int custom_dialog = 2131361820;
 			
 			// aapt resource value: 0x7F0A001D
-			public static int notification_action = 2131361821;
+			public static int default_activity_layout = 2131361821;
 			
 			// aapt resource value: 0x7F0A001E
-			public static int notification_action_tombstone = 2131361822;
+			public static int notification_action = 2131361822;
 			
 			// aapt resource value: 0x7F0A001F
-			public static int notification_template_custom_big = 2131361823;
+			public static int notification_action_tombstone = 2131361823;
 			
 			// aapt resource value: 0x7F0A0020
-			public static int notification_template_icon_group = 2131361824;
+			public static int notification_template_custom_big = 2131361824;
 			
 			// aapt resource value: 0x7F0A0021
-			public static int notification_template_part_chronometer = 2131361825;
+			public static int notification_template_icon_group = 2131361825;
 			
 			// aapt resource value: 0x7F0A0022
-			public static int notification_template_part_time = 2131361826;
+			public static int notification_template_part_chronometer = 2131361826;
 			
 			// aapt resource value: 0x7F0A0023
-			public static int select_dialog_item_material = 2131361827;
+			public static int notification_template_part_time = 2131361827;
 			
 			// aapt resource value: 0x7F0A0024
-			public static int select_dialog_multichoice_material = 2131361828;
+			public static int select_dialog_item_material = 2131361828;
 			
 			// aapt resource value: 0x7F0A0025
-			public static int select_dialog_singlechoice_material = 2131361829;
+			public static int select_dialog_multichoice_material = 2131361829;
 			
 			// aapt resource value: 0x7F0A0026
-			public static int support_simple_spinner_dropdown_item = 2131361830;
+			public static int select_dialog_singlechoice_material = 2131361830;
+			
+			// aapt resource value: 0x7F0A0027
+			public static int support_simple_spinner_dropdown_item = 2131361831;
 			
 			static Layout()
 			{
