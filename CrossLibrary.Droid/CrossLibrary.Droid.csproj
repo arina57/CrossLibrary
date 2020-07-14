@@ -82,13 +82,14 @@
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
+    <AndroidResource Include="Resources\anim\none.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\attrs.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CrossLibrary.Core\CrossLibrary.Core.csproj">
-      <Project>{0109B181-5160-47CE-AC1E-0C766E69E841}</Project>
+      <Project>{EB9C9083-EE19-40EB-875F-10EFA0E514A7}</Project>
       <Name>CrossLibrary.Core</Name>
     </ProjectReference>
   </ItemGroup>

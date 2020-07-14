@@ -66,11 +66,11 @@ namespace CrossLibrary.iOS.Views {
 
 
 
-        public void Show() {
+        public void Show(bool animated = true) {
             ModalPresentationStyle = UIModalPresentationStyle.Popover;
             ModalTransitionStyle = UIModalTransitionStyle.CoverVertical;
             ModalPresentationCapturesStatusBarAppearance = true;
-            PlatformFunctions.GetNavigationController().PushViewController(this, true);
+            PlatformFunctions.GetNavigationController().PushViewController(this, animated);
         }
 
 
@@ -84,42 +84,42 @@ namespace CrossLibrary.iOS.Views {
             await presentedTaskCompletionSource.Task;
         }
 
-        private void ShowOver(UIViewController parent) {
+        private void ShowOver(UIViewController parent, bool animated = true) {
             ModalPresentationStyle = UIModalPresentationStyle.OverCurrentContext;
             ModalTransitionStyle = UIModalTransitionStyle.CrossDissolve;
-            parent.PresentViewController(this, true, () => { });
+            parent.PresentViewController(this, animated, () => { });
         }
 
 
 
-        private async Task ShowOverAsync(UIViewController parent) {
+        private async Task ShowOverAsync(UIViewController parent, bool animated = true) {
             ModalPresentationStyle = UIModalPresentationStyle.OverCurrentContext;
             ModalTransitionStyle = UIModalTransitionStyle.CrossDissolve;
             dismissedTaskCompletionSource = new TaskCompletionSource<bool>();
             try {
-                parent.PresentViewController(this, true, () => { });
+                parent.PresentViewController(this, animated, () => { });
                 await dismissedTaskCompletionSource.Task;
             } finally {
                 dismissedTaskCompletionSource = null;
             }
         }
 
-        public async Task ShowAsync() {
+        public async Task ShowAsync(bool animated = true) {
             dismissedTaskCompletionSource = new TaskCompletionSource<bool>();
             try {
-                this.Show();
+                this.Show(animated);
                 await dismissedTaskCompletionSource.Task;
             } finally {
                 dismissedTaskCompletionSource = null;
             }
         }
 
-        public async Task ShowOverAsync() {
-            await ShowOverAsync(PlatformFunctions.GetTopViewController());
+        public async Task ShowOverAsync(bool animated = true) {
+            await ShowOverAsync(PlatformFunctions.GetTopViewController(), animated);
         }
 
-        public void ShowOver() {
-            ShowOver(PlatformFunctions.GetTopViewController());
+        public void ShowOver(bool animated = true) {
+            ShowOver(PlatformFunctions.GetTopViewController(), animated);
         }
 
 

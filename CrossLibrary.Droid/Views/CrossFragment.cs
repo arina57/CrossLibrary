@@ -4,6 +4,8 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Android.OS;
 using Android.Views;
+using Android.Views.Animations;
+//using Android.Views.Animations;
 using Android.Widget;
 using AndroidX.AppCompat.App;
 using AndroidX.Fragment.App;
@@ -75,11 +77,16 @@ namespace CrossLibrary.Droid.Views {
         }
 
 
-        public void Show() {
+        public void Show(bool animated = true) {
             if (!this.AboutToBeShown && !this.IsAdded) {
                 this.AboutToBeShown = true;
                 FragmentTransaction ft = AppCompatActivity.SupportFragmentManager.BeginTransaction();
-                ft.SetCustomAnimations(Resource.Animation.slide_in_from_right, Resource.Animation.slide_out_to_left, Resource.Animation.slide_in_from_left, Resource.Animation.slide_out_to_right);
+                if(animated) {
+                    ft.SetCustomAnimations(Resource.Animation.slide_in_from_right, Resource.Animation.slide_out_to_left, Resource.Animation.slide_in_from_left, Resource.Animation.slide_out_to_right);
+                } else {
+                    ft.SetCustomAnimations(Resource.Animation.none, Resource.Animation.none);
+                }
+                
                 //ft.SetCustomAnimations(Resource.Animation.SlideInFromBottom, Resource.Animation.FadeOutFast, Resource.Animation.FadeInFast, Resource.Animation.SlideOutBottom);
                 ft.Replace(Android.Resource.Id.Content, this)
                     .AddToBackStack(this.UnqueId)
@@ -87,11 +94,16 @@ namespace CrossLibrary.Droid.Views {
             }
         }
 
-        public void ShowOver() {
+        public void ShowOver(bool animated = true) {
             if (!this.AboutToBeShown && !this.IsAdded) {
                 this.AboutToBeShown = true;
                 FragmentTransaction ft = AppCompatActivity.SupportFragmentManager.BeginTransaction();
-                ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
+                if (animated) {
+                    ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
+                } else {
+                    ft.SetCustomAnimations(Resource.Animation.none, Resource.Animation.none);
+                }
+                
                 ft.Add(Android.Resource.Id.Content, this)
                     .AddToBackStack(this.UnqueId)
                     .Commit();
@@ -99,11 +111,11 @@ namespace CrossLibrary.Droid.Views {
         }
 
 
-        public async Task ShowAsync() {
+        public async Task ShowAsync(bool animated = true) {
             dismissedTaskCompletionSource = new TaskCompletionSource<bool>();
             if (!this.AboutToBeShown && !this.IsAdded) {
                 try {
-                    Show();
+                    Show(animated);
                     await dismissedTaskCompletionSource.Task;
                 } finally {
                     dismissedTaskCompletionSource = null;
@@ -111,12 +123,12 @@ namespace CrossLibrary.Droid.Views {
             }
         }
 
-        public async Task ShowOverAsync() {
+        public async Task ShowOverAsync(bool animated = true) {
             dismissedTaskCompletionSource = new TaskCompletionSource<bool>();
             if (!this.AboutToBeShown && !this.IsAdded) {
 
                 try {
-                    ShowOver();
+                    ShowOver(animated);
                     await dismissedTaskCompletionSource.Task;
                 } finally {
                     dismissedTaskCompletionSource = null;
@@ -136,6 +148,7 @@ namespace CrossLibrary.Droid.Views {
                 return this.View.FindViewsOfTypeInTree<T>();
             }
         }
+
 
 
 
@@ -195,6 +208,7 @@ namespace CrossLibrary.Droid.Views {
 
         public override void OnDestroy() {
             base.OnDestroy();
+            Closing = true;
             ViewModel?.ViewDestroy();
         }
 
@@ -226,7 +240,7 @@ namespace CrossLibrary.Droid.Views {
             GC.Collect(); //Shouldn't have to do this, should be done automaticall but heap keeps growing until OOM
         }
 
-
+ 
 
         /// <summary>
         /// Binds an action to a view model property.

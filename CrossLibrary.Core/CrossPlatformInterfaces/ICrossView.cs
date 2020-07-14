@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace CrossLibrary.Interfaces {
     public interface ICrossView : IDisposable{
-        Task ShowOverAsync();
-        Task ShowAsync();
+        Task ShowOverAsync(bool animated = true);
+        Task ShowAsync(bool animated = true);
 
-        void ShowOver();
-        void Show();
+        void ShowOver(bool animated = true);
+        void Show(bool animated = true);
         void Dismiss();
 
         void RefreshUILocale();

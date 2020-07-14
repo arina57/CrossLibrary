@@ -82,22 +82,22 @@ namespace CrossLibrary {
             }
         }
 
-        public void Show() {
-            //CrossView.Show();
-            CrossView.ShowAsync();
+        public void Show(bool animated = true) {
+            CrossView.Show(animated);
+            //CrossView.ShowAsync();
         }
 
-        public async Task ShowAsync() {
-            await CrossView.ShowAsync();
+        public async Task ShowAsync(bool animated = true) {
+            await CrossView.ShowAsync(animated);
         }
 
-        public void ShowOver() {
+        public void ShowOver(bool animated = true) {
             //CrossView.ShowOver();
-            CrossView.ShowOverAsync();
+            CrossView.ShowOverAsync(animated);
         }
 
-        public async Task ShowOverAsync() {
-            await CrossView.ShowOverAsync();
+        public async Task ShowOverAsync(bool animated = true) {
+            await CrossView.ShowOverAsync(animated);
         }
 
         public virtual void ViewDestroy() {

@@ -105,28 +105,31 @@ namespace CrossLibrary.Droid
 			public static int fade_out_fast = 2130771993;
 			
 			// aapt resource value: 0x7F01001A
-			public static int slide_in_from_bottom = 2130771994;
+			public static int none = 2130771994;
 			
 			// aapt resource value: 0x7F01001B
-			public static int slide_in_from_left = 2130771995;
+			public static int slide_in_from_bottom = 2130771995;
 			
 			// aapt resource value: 0x7F01001C
-			public static int slide_in_from_right = 2130771996;
+			public static int slide_in_from_left = 2130771996;
 			
 			// aapt resource value: 0x7F01001D
-			public static int slide_in_from_top = 2130771997;
+			public static int slide_in_from_right = 2130771997;
 			
 			// aapt resource value: 0x7F01001E
-			public static int slide_out_bottom = 2130771998;
-			
-			// aapt resource value: 0x7F010021
-			public static int slide_out_top = 2130772001;
+			public static int slide_in_from_top = 2130771998;
 			
 			// aapt resource value: 0x7F01001F
-			public static int slide_out_to_left = 2130771999;
+			public static int slide_out_bottom = 2130771999;
+			
+			// aapt resource value: 0x7F010022
+			public static int slide_out_top = 2130772002;
 			
 			// aapt resource value: 0x7F010020
-			public static int slide_out_to_right = 2130772000;
+			public static int slide_out_to_left = 2130772000;
+			
+			// aapt resource value: 0x7F010021
+			public static int slide_out_to_right = 2130772001;
 			
 			static Animation()
 			{
