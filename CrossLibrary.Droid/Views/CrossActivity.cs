@@ -5,7 +5,6 @@ using AndroidX.AppCompat.App;
 using static CrossLibrary.Droid.Enums;
 
 namespace CrossLibrary.Droid.Views {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
     public class CrossActivity : AppCompatActivity, ICrossActivity {
 		public ActivityBackAction BackAction { get; set; } =  ActivityBackAction.Normal;
 
