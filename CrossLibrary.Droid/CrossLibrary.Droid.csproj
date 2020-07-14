@@ -63,6 +63,9 @@
     <Compile Include="Views\CrossContainerView.cs" />
     <Compile Include="Views\CrossFragment.cs" />
     <Compile Include="CrossMainApplication.cs" />
+    <Compile Include="Views\CrossActivity.cs" />
+    <Compile Include="Views\ICrossActivity.cs" />
+    <Compile Include="Enums.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

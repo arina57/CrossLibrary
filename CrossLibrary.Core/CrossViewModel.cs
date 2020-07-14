@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace CrossLibrary {
     public class CrossViewModel {
+
+
         public bool HasCrossView => crossView != null;
         protected virtual string ViewClassId { get; set; } = string.Empty;
         internal ICrossView crossView;
