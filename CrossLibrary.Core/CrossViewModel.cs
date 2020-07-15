@@ -79,6 +79,7 @@ namespace CrossLibrary {
                         container.SubCrossViewModel.RefreshUILocale();
                     }
                 }
+                RefreshBindings();
             }
         }
 
