@@ -4,6 +4,7 @@ using Foundation;
 using UIKit;
 
 namespace CrossLibrary.iOS {
+    [Obsolete("Newer apps inherit CrossSceneDelegate on your SceneDeletegate")]
     public abstract class CrossAppDelegate : UIApplicationDelegate {
     
 

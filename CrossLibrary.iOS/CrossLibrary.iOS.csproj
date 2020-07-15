@@ -59,6 +59,7 @@
     <Compile Include="Views\CrossUIViewController.cs" />
     <Compile Include="CrossAppDelegate.cs" />
     <Compile Include="Views\UIPaddingLabel.cs" />
+    <Compile Include="CrossSceneDelegate.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CrossLibrary.Core\CrossLibrary.Core.csproj">

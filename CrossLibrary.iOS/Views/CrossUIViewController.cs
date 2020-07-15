@@ -70,7 +70,8 @@ namespace CrossLibrary.iOS.Views {
             ModalPresentationStyle = UIModalPresentationStyle.Popover;
             ModalTransitionStyle = UIModalTransitionStyle.CoverVertical;
             ModalPresentationCapturesStatusBarAppearance = true;
-            PlatformFunctions.GetNavigationController().PushViewController(this, animated);
+            var nav = PlatformFunctions.GetNavigationController();
+            nav.PushViewController(this, animated);
         }
 
 
