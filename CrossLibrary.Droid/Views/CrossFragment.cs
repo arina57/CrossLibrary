@@ -84,6 +84,7 @@ namespace CrossLibrary.Droid.Views {
                 if(animated) {
                     ft.SetCustomAnimations(Resource.Animation.slide_in_from_right, Resource.Animation.slide_out_to_left, Resource.Animation.slide_in_from_left, Resource.Animation.slide_out_to_right);
                 } else {
+                    ft.SetCustomAnimations(Resource.Animation.slide_in_from_right, Resource.Animation.slide_out_to_left, Resource.Animation.slide_in_from_left, Resource.Animation.slide_out_to_right);
                     ft.SetCustomAnimations(Resource.Animation.none, Resource.Animation.none);
                 }
                 
@@ -101,7 +102,7 @@ namespace CrossLibrary.Droid.Views {
                 if (animated) {
                     ft.SetCustomAnimations(Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast, Resource.Animation.fade_in_fast, Resource.Animation.fade_out_fast);
                 } else {
-                    ft.SetCustomAnimations(Resource.Animation.none, Resource.Animation.none);
+                    ft.SetCustomAnimations(Resource.Animation.none, Resource.Animation.fade_out_fast, Resource.Animation.none, Resource.Animation.fade_out_fast);
                 }
                 
                 ft.Add(Android.Resource.Id.Content, this)
