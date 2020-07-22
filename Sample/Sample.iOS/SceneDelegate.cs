@@ -3,32 +3,24 @@ using CrossLibrary.Core;
 using Foundation;
 using UIKit;
 
-namespace CrossLibrary.iOS {
-    public abstract class CrossSceneDelegate : UIResponder, IUIWindowSceneDelegate {
+namespace NewSingleViewTemplate {
+    [Register("SceneDelegate")]
+    public class SceneDelegate : CrossLibrary.iOS.CrossSceneDelegate {
 
         [Export("window")]
-        public virtual UIWindow Window { get; set; }
-        protected abstract CrossApp CrossApp { get; }
+        public override UIWindow Window { get; set; }
 
+        protected override CrossApp CrossApp => new Sample.Core.SampleCrossApp();
 
         [Export("scene:willConnectToSession:options:")]
-        public virtual void WillConnect(UIScene scene, UISceneSession session, UISceneConnectionOptions connectionOptions) {
+        public override void WillConnect(UIScene scene, UISceneSession session, UISceneConnectionOptions connectionOptions) {
             // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
             // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
             // This delegate does not imply the connecting scene or session are new (see UIApplicationDelegate `GetConfiguration` instead).
-
-            if (scene is UIWindowScene windowScene) {
-                Window = new UIWindow(windowScene);
-                var nav = new UINavigationController();
-                Window.RootViewController = nav;
-                Window.MakeKeyAndVisible();
-                CrossApp.AppLoaded();
-
-            }
         }
 
         [Export("sceneDidDisconnect:")]
-        public virtual void DidDisconnect(UIScene scene) {
+        public override void DidDisconnect(UIScene scene) {
             // Called as the scene is being released by the system.
             // This occurs shortly after the scene enters the background, or when its session is discarded.
             // Release any resources associated with this scene that can be re-created the next time the scene connects.
@@ -36,30 +28,28 @@ namespace CrossLibrary.iOS {
         }
 
         [Export("sceneDidBecomeActive:")]
-        public virtual void DidBecomeActive(UIScene scene) {
+        public override void DidBecomeActive(UIScene scene) {
             // Called when the scene has moved from an inactive state to an active state.
             // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-            CrossApp.AppFocused();
         }
 
         [Export("sceneWillResignActive:")]
-        public virtual void WillResignActive(UIScene scene) {
+        public override void WillResignActive(UIScene scene) {
             // Called when the scene will move from an active state to an inactive state.
             // This may occur due to temporary interruptions (ex. an incoming phone call).
         }
 
         [Export("sceneWillEnterForeground:")]
-        public virtual void WillEnterForeground(UIScene scene) {
+        public override void WillEnterForeground(UIScene scene) {
             // Called as the scene transitions from the background to the foreground.
             // Use this method to undo the changes made on entering the background.
         }
 
         [Export("sceneDidEnterBackground:")]
-        public virtual void DidEnterBackground(UIScene scene) {
+        public override void DidEnterBackground(UIScene scene) {
             // Called as the scene transitions from the foreground to the background.
             // Use this method to save data, release shared resources, and store enough scene-specific state information
             // to restore the scene back to its current state.
-            CrossApp.AppLostFocus();
         }
     }
 }

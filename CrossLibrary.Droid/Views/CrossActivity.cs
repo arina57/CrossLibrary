@@ -5,7 +5,7 @@ using AndroidX.AppCompat.App;
 using static CrossLibrary.Droid.Enums;
 
 namespace CrossLibrary.Droid.Views {
-    public class CrossActivity : AppCompatActivity, ICrossActivity {
+    public abstract class CrossActivity : AppCompatActivity, ICrossActivity {
 		public ActivityBackAction BackAction { get; set; } =  ActivityBackAction.Normal;
 
         protected override void OnCreate(Bundle savedInstanceState) {
