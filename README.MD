@@ -44,9 +44,6 @@ In your Android project Create / Edit a MainApplication class that inherits from
         }
 
         protected override CrossApp CrossApp => new Core.MyCrossApp();
-
-
-
     }
 ```
 
