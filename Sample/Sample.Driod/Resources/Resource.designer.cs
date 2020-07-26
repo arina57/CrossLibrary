@@ -4708,16 +4708,19 @@ namespace Sample.Driod
 			public const int notification_template_part_time = 2131361831;
 			
 			// aapt resource value: 0x7F0A0028
-			public const int select_dialog_item_material = 2131361832;
+			public const int second_view = 2131361832;
 			
 			// aapt resource value: 0x7F0A0029
-			public const int select_dialog_multichoice_material = 2131361833;
+			public const int select_dialog_item_material = 2131361833;
 			
 			// aapt resource value: 0x7F0A002A
-			public const int select_dialog_singlechoice_material = 2131361834;
+			public const int select_dialog_multichoice_material = 2131361834;
 			
 			// aapt resource value: 0x7F0A002B
-			public const int support_simple_spinner_dropdown_item = 2131361835;
+			public const int select_dialog_singlechoice_material = 2131361835;
+			
+			// aapt resource value: 0x7F0A002C
+			public const int support_simple_spinner_dropdown_item = 2131361836;
 			
 			static Layout()
 			{

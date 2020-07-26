@@ -8,7 +8,8 @@ namespace Sample.Core.ViewModels {
         public string ButtonText => "SecondView";
 
         public void Button_Clicked(object sender, EventArgs e) {
-            
+            var secondView = new SecondViewModel();
+            secondView.Show();
         }
     }
 }
