@@ -11,6 +11,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using CrossLibrary.Droid.Views;
 using Sample.Core.ViewModels;
 
 namespace Sample.Driod.Views {
@@ -34,6 +35,19 @@ namespace Sample.Driod.Views {
             BindClick(button, vm => vm.Button_Clicked);
 
             return view;
+        }
+
+
+        public override void OnResume() {
+            base.OnResume();
+            var activity = Plugin.CurrentActivity.CrossCurrentActivity.Current.Activity as ICrossActivity;
+            activity.BackAction = CrossLibrary.Droid.Enums.ActivityBackAction.CloseActivity;
+        }
+
+        public override void OnPause() {
+            base.OnPause();
+            var activity = Plugin.CurrentActivity.CrossCurrentActivity.Current.Activity as ICrossActivity;
+            activity.BackAction = CrossLibrary.Droid.Enums.ActivityBackAction.Normal;
         }
     }
 }

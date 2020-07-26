@@ -120,6 +120,8 @@
     </ItemGroup>
     <ItemGroup>
         <InterfaceDefinition Include="LaunchScreen.storyboard" />
+        <InterfaceDefinition Include="Views\FirstView.xib" />
+        <InterfaceDefinition Include="Views\SecondView.xib" />
     </ItemGroup>
     <ItemGroup>
         <None Include="Info.plist" />
@@ -129,6 +131,14 @@
         <Compile Include="Main.cs" />
         <Compile Include="AppDelegate.cs" />
         <Compile Include="SceneDelegate.cs" />
+        <Compile Include="Views\FirstView.cs" />
+        <Compile Include="Views\FirstView.designer.cs">
+          <DependentUpon>FirstView.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Views\SecondView.cs" />
+        <Compile Include="Views\SecondView.designer.cs">
+          <DependentUpon>SecondView.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\CrossLibrary.iOS\CrossLibrary.iOS.csproj">
