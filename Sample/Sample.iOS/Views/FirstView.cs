@@ -3,7 +3,7 @@ using Sample.Core.ViewModels;
 using UIKit;
 
 namespace Sample.iOS.Views {
-    public partial class FirstView : CrossLibrary.iOS.Views.CrossUIViewController<SecondViewModel> {
+    public partial class FirstView : CrossLibrary.iOS.Views.CrossUIViewController<FirstViewModel> {
         public FirstView() : base("FirstView", null) {
         }
 
