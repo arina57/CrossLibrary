@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{922CAE41-CE85-48E0-B814-3AB55850BFCD}"
 	ProjectSection(SolutionItems) = preProject
 		CrossLibrary.nuspec = CrossLibrary.nuspec
+		README.MD = README.MD
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{6CEB3686-FF0C-478A-B19A-9CD33CB6465F}"

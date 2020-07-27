@@ -62,6 +62,15 @@ Or `CrossLibrary.Droid.Views.CrossActivity` can directly be used as the main lau
 
 ## iOS
 
+Remove `Main.Storyboard` and remove Main from the launcher from Info.plist
+
+```XML
+	<!-- <key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIMainStoryboardFile~ipad</key>
+	<string>Main</string>-->
+```
+
 Create / Edit SceneDelegate that inherits from `CrossLibrary.iOS.CrossApp`
 
 ```C#
@@ -70,4 +79,5 @@ Create / Edit SceneDelegate that inherits from `CrossLibrary.iOS.CrossApp`
         protected override CrossApp CrossApp => new Core.MyCrossApp();
     }
 ```
+
 
